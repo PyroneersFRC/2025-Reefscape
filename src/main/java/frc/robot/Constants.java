@@ -34,5 +34,9 @@ public final class Constants {
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
+    public static final double kTeleDriveAccelerationUnitsPerSecond = 3;
+  }
+  public static class xboxConstants {
+    public static final double kDeadband = 0.1;
   }
 }
