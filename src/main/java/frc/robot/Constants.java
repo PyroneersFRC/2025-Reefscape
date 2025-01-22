@@ -27,5 +27,12 @@ public final class Constants {
     public static final int kRearLeftTurningCanId = 6;
     public static final int kFrontRightTurningCanId = 8;
     public static final int kRearRightTurningCanId = 4;
+
+  }
+  public static class robot {
+    public static final double kPTurning = 0.4;
+    public static final double kITurning = 0;
+    public static final double kDTurning = 0;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
   }
 }
