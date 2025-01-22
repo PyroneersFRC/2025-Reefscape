@@ -3,8 +3,9 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.robot;
 import frc.robot.Constants.xboxConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -47,13 +48,26 @@ public class SwerveJoystickCmd extends Command{
         ySpeed = Math.abs(xSpeed) > xboxConstants.kDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > xboxConstants.kDeadband ? turningSpeed : 0.0;
 
-        xSpeed = xLimiter.calculate(xSpeed);
-        ySpeed = yLimiter.calculate(ySpeed);
-        turningSpeed = turnLimiter.calculate(turningSpeed);
+        xSpeed = xLimiter.calculate(xSpeed) * robot.kPhysicalMaxSpeedMetersPerSecond;
+        ySpeed = yLimiter.calculate(ySpeed) * robot.kPhysicalMaxSpeedMetersPerSecond;
+        turningSpeed = turnLimiter.calculate(turningSpeed) * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+
+        ChassisSpeeds chassisSpeeds;
+        if (fieldOrientedFunction.get()) {
+            // Relative to field
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    xSpeed, ySpeed, turningSpeed, DriveSubsystem.getRotation2d());
+        } else {
+            // Relative to robot
+            chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+        }
+
+        SwerveModuleState[] moduleStates = robot.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        DriveSubsystem.setModuleStates(moduleStates);
     }
     @Override
     public void end(boolean interrupted){
-
+        DriveSubsystem.stopModules();
     }
     @Override
     public boolean isFinished(){
