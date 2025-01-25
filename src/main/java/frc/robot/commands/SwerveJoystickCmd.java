@@ -45,7 +45,11 @@ public class SwerveJoystickCmd extends Command{
 
         xSpeed = Math.abs(xSpeed) > xboxConstants.kDeadband ? xSpeed : 0.0;
         ySpeed = Math.abs(xSpeed) > xboxConstants.kDeadband ? ySpeed : 0.0;
+        xSpeed *= 0.5;
+        ySpeed *= 0.5;
+
         turningSpeed = Math.abs(turningSpeed) > xboxConstants.kDeadband ? turningSpeed : 0.0;
+        turningSpeed *= 0.5;
 
         xSpeed = xLimiter.calculate(xSpeed) * robot.kPhysicalMaxSpeedMetersPerSecond;
         ySpeed = yLimiter.calculate(ySpeed) * robot.kPhysicalMaxSpeedMetersPerSecond;
@@ -55,7 +59,7 @@ public class SwerveJoystickCmd extends Command{
         if (fieldOrientedFunction.get()) {
             // Relative to field
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    0.5*xSpeed, 0.5*ySpeed, 0.5*turningSpeed, DriveSubsystem.getRotation2d());
+                    xSpeed, ySpeed, turningSpeed, DriveSubsystem.getRotation2d());
         } else {
             // Relative to robot
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
@@ -65,6 +69,7 @@ public class SwerveJoystickCmd extends Command{
         DriveSubsystem.setModuleStates(moduleStates);
         System.out.println(DriveSubsystem.getHeading());
     }
+
     @Override
     public void end(boolean interrupted){
         DriveSubsystem.stopModules();

@@ -77,8 +77,8 @@ public class SwerveModule {
 
         // Command driving and turnig SPAKRS towards their perspective setpoints
         // TODO Check if correct, leftover from yt
-        m_driveMotor.set(desiredState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
-        m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), desiredState.angle.getRadians()));
+        m_driveMotor.set(correctedState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
+        m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), correctedState.angle.getRadians()));
     }
 
     public void stop() {

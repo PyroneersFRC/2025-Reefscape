@@ -4,6 +4,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -35,6 +36,21 @@ public class DriveSubsystem extends SubsystemBase {
         }).start();
     }
         
+    public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
+        System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
+
+        double xSpeedDelivered = xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double ySpeedDelivered = ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double rotationDelivered = rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+
+        var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
+            fieldRelative 
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotationDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
+                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotationDelivered)
+        );
+
+        this.setModuleStates(swerveModuleStates);
+    }
 
     public void zeroHeading(){
         m_gyro.reset();
@@ -43,7 +59,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     public double getHeading() {
         return Math.IEEEremainder(m_gyro.getAngle(), 360);
-        
     }
 
 
