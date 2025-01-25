@@ -18,9 +18,8 @@ public class SwerveJoystickCmd extends Command{
     public final SlewRateLimiter xLimiter,yLimiter,turnLimiter;
     
     
-    public SwerveJoystickCmd(DriveSubsystem driveSubsystem,
-            Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction,Supplier<Double> turningSpdFunction,
-            Supplier<Boolean> fieldOrientedFunction) {
+    public SwerveJoystickCmd(DriveSubsystem driveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction,
+                            Supplier<Double> turningSpdFunction, Supplier<Boolean> fieldOrientedFunction) {
         this.DriveSubsystem = driveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
@@ -30,7 +29,7 @@ public class SwerveJoystickCmd extends Command{
         this.yLimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
         this.turnLimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
         addRequirements(driveSubsystem);
-        }
+    }
 
     
 
@@ -56,7 +55,7 @@ public class SwerveJoystickCmd extends Command{
         if (fieldOrientedFunction.get()) {
             // Relative to field
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, turningSpeed, DriveSubsystem.getRotation2d());
+                    0.5*xSpeed, 0.5*ySpeed, 0.5*turningSpeed, DriveSubsystem.getRotation2d());
         } else {
             // Relative to robot
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
@@ -64,6 +63,7 @@ public class SwerveJoystickCmd extends Command{
 
         SwerveModuleState[] moduleStates = robot.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         DriveSubsystem.setModuleStates(moduleStates);
+        System.out.println(DriveSubsystem.getHeading());
     }
     @Override
     public void end(boolean interrupted){

@@ -32,6 +32,14 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 4;
 
   }
+
+  public static class DriveConstants {
+    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+    public static final double kFrontRightChassisAngularOffset = 0;
+    public static final double kBackLeftChassisAngularOffset = Math.PI;
+    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+  }
+
   public static class robot {
     public static final double kPTurning = 0.4;
     public static final double kITurning = 0;
