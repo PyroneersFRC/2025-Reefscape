@@ -2,6 +2,10 @@ package frc.robot.subsystems;
 
 import java.time.Period;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -13,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANids;
@@ -38,18 +43,24 @@ public class DriveSubsystem extends SubsystemBase {
             m_RearRight.getPosition()
           });
 
+    private final Pose2d m_Pose2d = new Pose2d(getPose2d().getTranslation(),getPose2d().getRotation());
+
     // private final Pose2d m_pose = new Pose2d(null, getRotation2d());
     // private final Pose2d m_poseZero = new Pose2d(0,0, getRotation2dZero());
     
     public DriveSubsystem() {
-        new Thread(() -> {
-            try{
-                Thread.sleep(1000);
-                zeroHeading();
-            }catch (Exception e){}
-        }).start();
+        RobotConfig config;
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
     }
-        
+
+    // Configure AutoBuilder
+    ///AutoBuilder.configure(getPose2d(), resetPose2d(), getCurrentSpeeds(), drive(), null, config, null, null);
+
+}
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
         //System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
 
@@ -95,11 +106,11 @@ public class DriveSubsystem extends SubsystemBase {
         return m_odometry.getPoseMeters();
     }
     public void resetPose2d(){
-        m_odometry.resetPose(getPose2d());
+        m_odometry.resetPose(m_Pose2d);
     }
-    // public ChassisSpeeds getCurrentSpeeds(){
-    //     return robot.kDriveKinematics.toChassisSpeeds();
-    // }
+    public ChassisSpeeds getCurrentSpeeds(){
+         return robot.kDriveKinematics.toChassisSpeeds();
+    }
     //TODO MESA STIN PARENTHESI
 
     public void stopModules() {

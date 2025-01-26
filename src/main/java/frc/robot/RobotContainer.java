@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,6 +49,6 @@ public class RobotContainer {
   // }
 
   public Command getAutonomousCommand() {
-    return null;
+    return new PathPlannerAuto("C:\\Users\\elias\\Desktop\\PYRONEERS\\Programming\\deploy\\pathplanner\\paths");
   }
 }
