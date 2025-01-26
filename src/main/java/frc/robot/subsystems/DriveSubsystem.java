@@ -39,9 +39,9 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
         System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
 
-        double xSpeedDelivered = xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double ySpeedDelivered = ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double rotationDelivered = rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+        double xSpeedDelivered = 0.1 * xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double ySpeedDelivered = 0.1 * ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double rotationDelivered = 0.1 * rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
 
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
