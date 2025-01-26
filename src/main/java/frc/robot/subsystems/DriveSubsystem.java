@@ -1,9 +1,13 @@
 package frc.robot.subsystems;
 
+import java.time.Period;
+
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -24,8 +28,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     //private final SwerveModulePosition m_ModulePositions = new SwerveModulePosition(, getRotation2d());
 
-    private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
 
+    private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
+    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(robot.kDriveKinematics,
+          Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_RearLeft.getPosition(),
+            m_RearRight.getPosition()
+          });
+
+    // private final Pose2d m_pose = new Pose2d(null, getRotation2d());
+    // private final Pose2d m_poseZero = new Pose2d(0,0, getRotation2dZero());
     
     public DriveSubsystem() {
         new Thread(() -> {
@@ -37,11 +51,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
         
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
-        System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
+        //System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
 
-        double xSpeedDelivered = 0.1 * xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double ySpeedDelivered = 0.1 * ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double rotationDelivered = 0.1 * rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+        double xSpeedDelivered = 0.3 * xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double ySpeedDelivered = 0.3 * ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double rotationDelivered = 0.3 * rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
 
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
@@ -52,19 +66,41 @@ public class DriveSubsystem extends SubsystemBase {
         this.setModuleStates(swerveModuleStates);
     }
 
+    @Override
+    public void periodic(){
+        m_odometry.update(
+        Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_RearLeft.getPosition(),
+          m_RearRight.getPosition()
+        });
+        System.out.println(m_RearLeft.getPosition());
+    }
     public void zeroHeading(){
         m_gyro.reset();
     }
-
 
     public double getHeading() {
         return Math.IEEEremainder(m_gyro.getAngle(), 360);
     }
 
-
     public Rotation2d getRotation2d(){
         return Rotation2d.fromDegrees(getHeading());
     }
+    public Rotation2d getRotation2dZero(){
+        return Rotation2d.fromDegrees(0);
+    }
+    public Pose2d getPose2d(){
+        return m_odometry.getPoseMeters();
+    }
+    public void resetPose2d(){
+        m_odometry.resetPose(getPose2d());
+    }
+    // public ChassisSpeeds getCurrentSpeeds(){
+    //     return robot.kDriveKinematics.toChassisSpeeds();
+    // }
+    //TODO MESA STIN PARENTHESI
 
     public void stopModules() {
         m_RearLeft.stop();
@@ -80,6 +116,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.setDesiredState(desiredStates[1]);
         m_RearLeft.setDesiredState(desiredStates[2]);
         m_RearRight.setDesiredState(desiredStates[3]);
+        
     }
-    
 }

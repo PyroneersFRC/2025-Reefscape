@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.robot;
 
@@ -38,6 +39,7 @@ public class SwerveModule {
 
     public double getDrivePosition() {
         return m_driveEncoder.getPosition();
+        
     }
     public double getDriveVelocity() {
         return m_driveEncoder.getVelocity();
@@ -48,7 +50,13 @@ public class SwerveModule {
     public double getTurningVelocity() {
         return m_turningEncoder.getVelocity();
     }
-    //public double getAbsoluteEncoderRad() {
+    public SwerveModulePosition getPosition() {
+        // Apply chassis angular offset to the encoder position to get the position
+        // relative to the chassis.
+        return new SwerveModulePosition(
+            m_driveEncoder.getPosition(),
+            new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+    }
 
     
 
@@ -60,15 +68,15 @@ public class SwerveModule {
         // apply chassis angular offset to the desired state
         SwerveModuleState correctedState = new SwerveModuleState();
         correctedState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
+        // coreectedState.speedMetersPerSecond = 0 
         correctedState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
-
         // optimize the reference to avoid spinning further than 90 degrees
         correctedState.optimize(new Rotation2d(getTurningPosition()));        
         
         // Command driving and turnig SPAKRS towards their perspective setpoints
         // // TODO Check if correct, leftover from yt
-        // m_driveMotor.set(correctedState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
-        // m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), correctedState.angle.getRadians()));
+        m_driveMotor.set(correctedState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
+        m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), correctedState.angle.getRadians()));
     }
 
     public void stop() {
