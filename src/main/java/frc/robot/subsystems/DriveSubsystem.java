@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.robot;
@@ -31,11 +32,10 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveModule m_RearLeft = new SwerveModule(CANids.kRearLeftDrivingCanId,CANids.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
     private final SwerveModule m_RearRight = new SwerveModule(CANids.kRearRightDrivingCanId,CANids.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
 
-    //private final SwerveModulePosition m_ModulePositions = new SwerveModulePosition(, getRotation2d());
-
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
-    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(robot.kDriveKinematics,
+    private final SwerveDriveKinematics m_driveKinematics = robot.kDriveKinematics;
+    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_driveKinematics,
           Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -43,22 +43,36 @@ public class DriveSubsystem extends SubsystemBase {
             m_RearRight.getPosition()
           });
 
-    private final Pose2d m_Pose2d = new Pose2d(getPose2d().getTranslation(),getPose2d().getRotation());
+    //private final Pose2d m_Pose2d = new Pose2d(getPose2d().getTranslation(),getPose2d().getRotation());
 
-    // private final Pose2d m_pose = new Pose2d(null, getRotation2d());
-    // private final Pose2d m_poseZero = new Pose2d(0,0, getRotation2dZero());
     
     public DriveSubsystem() {
         RobotConfig config;
     try{
       config = RobotConfig.fromGUISettings();
+        // Configure AutoBuilder
+        AutoBuilder.configure(
+            this::getPose2d, 
+            this::resetPose2d, 
+            this::getCurrentSpeeds,
+            this::driveRobotRelative, 
+            new PPHolonomicDriveController(
+            robot.kPIDDrive,
+            robot.kPIDTurning
+            ), config,
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+             } , this);
+
+
     } catch (Exception e) {
       // Handle exception as needed
       e.printStackTrace();
     }
-
-    // Configure AutoBuilder
-    ///AutoBuilder.configure(getPose2d(), resetPose2d(), getCurrentSpeeds(), drive(), null, config, null, null);
 
 }
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
@@ -105,13 +119,19 @@ public class DriveSubsystem extends SubsystemBase {
     public Pose2d getPose2d(){
         return m_odometry.getPoseMeters();
     }
-    public void resetPose2d(){
-        m_odometry.resetPose(m_Pose2d);
+    public void resetPose2d(Pose2d pose2d){
+        m_odometry.resetPose(pose2d);
     }
     public ChassisSpeeds getCurrentSpeeds(){
-         return robot.kDriveKinematics.toChassisSpeeds();
+        return m_driveKinematics.toChassisSpeeds(new SwerveModuleState[]{m_frontLeft.getState(),m_frontRight.getState(),m_RearLeft.getState(),m_RearRight.getState()});
     }
-    //TODO MESA STIN PARENTHESI
+
+    public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
+    
+        SwerveModuleState[] targetStates = m_driveKinematics.toSwerveModuleStates(targetSpeeds);
+        setModuleStates(targetStates);
+      }
 
     public void stopModules() {
         m_RearLeft.stop();

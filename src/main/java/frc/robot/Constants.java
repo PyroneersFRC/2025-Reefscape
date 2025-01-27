@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
@@ -31,6 +34,9 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 8;
     public static final int kRearRightTurningCanId = 4;
 
+    public static final int kRightElevatorCanId = 10;
+    public static final int kLeftElevatorCanId = 11;
+
   }
 
   public static class DriveConstants {
@@ -41,9 +47,19 @@ public final class Constants {
   }
 
   public static class robot {
+    public static final PIDConstants kPIDDrive = new PIDConstants(1,0,0);
+    public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
+    public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+    
+    
     public static final double kPTurning = 0.4;
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
+
+    public static final double kPElevator = 1;
+    public static final double kIElevator = 0;
+    public static final double kDElevator = 0;
+
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
     public static final double kTeleDriveAccelerationUnitsPerSecond = 3;
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;

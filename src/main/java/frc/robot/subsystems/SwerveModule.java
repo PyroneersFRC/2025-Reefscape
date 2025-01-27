@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Robot;
 import frc.robot.Constants.robot;
 
 
@@ -33,7 +34,7 @@ public class SwerveModule {
         m_turningEncoder = m_turningMotor.getAbsoluteEncoder();
         m_driveEncoder = m_driveMotor.getEncoder();
 
-        m_turningPIDcontroller = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+        m_turningPIDcontroller = robot.kPIDTurningController;
         m_turningPIDcontroller.enableContinuousInput(Math.PI, Math.PI);
     }   
 

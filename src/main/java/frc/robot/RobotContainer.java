@@ -49,6 +49,6 @@ public class RobotContainer {
   // }
 
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("C:\\Users\\elias\\Desktop\\PYRONEERS\\Programming\\deploy\\pathplanner\\paths");
+    return new PathPlannerAuto("auto1");
   }
 }
