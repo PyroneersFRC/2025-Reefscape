@@ -100,7 +100,6 @@ public class DriveSubsystem extends SubsystemBase {
           m_RearLeft.getPosition(),
           m_RearRight.getPosition()
         });
-        System.out.println(m_RearLeft.getPosition());
     }
     public void zeroHeading(){
         m_gyro.reset();

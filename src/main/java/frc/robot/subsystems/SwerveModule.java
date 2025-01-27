@@ -35,7 +35,7 @@ public class SwerveModule {
         m_driveEncoder = m_driveMotor.getEncoder();
 
         m_turningPIDcontroller = robot.kPIDTurningController;
-        m_turningPIDcontroller.enableContinuousInput(Math.PI, Math.PI);
+        m_turningPIDcontroller.enableContinuousInput(0, Math.PI);
     }   
 
     public double getDrivePosition() {
@@ -72,7 +72,7 @@ public class SwerveModule {
         // coreectedState.speedMetersPerSecond = 0 
         correctedState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
         // optimize the reference to avoid spinning further than 90 degrees
-        correctedState.optimize(new Rotation2d(getTurningPosition()));        
+        correctedState.optimize(new Rotation2d(m_turningEncoder.getPosition()));        
         
         // Command driving and turnig SPAKRS towards their perspective setpoints
         // // TODO Check if correct, leftover from yt
