@@ -8,7 +8,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Robot;
 import frc.robot.Constants.robot;
 
 
@@ -23,22 +25,22 @@ public class SwerveModule {
 
     private final PIDController m_turningPIDcontroller;
 
-    public SwerveModule(int driveMotorid, int turningMotorid, double chassisAngularOffset) {
-
+    public SwerveModule(int driveMotorId, int turningMotorId, double chassisAngularOffset) {
         m_chassisAngularOffset = chassisAngularOffset;
 
-        m_driveMotor = new SparkFlex(driveMotorid, MotorType.kBrushless);
-        m_turningMotor = new SparkMax(turningMotorid, MotorType.kBrushless);
+        m_driveMotor = new SparkFlex(driveMotorId, MotorType.kBrushless);
+        m_turningMotor = new SparkMax(turningMotorId, MotorType.kBrushless);
         
         m_turningEncoder = m_turningMotor.getAbsoluteEncoder();
         m_driveEncoder = m_driveMotor.getEncoder();
 
-        m_turningPIDcontroller = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+        m_turningPIDcontroller = robot.kPIDTurningController;
         m_turningPIDcontroller.enableContinuousInput(Math.PI, Math.PI);
     }   
 
     public double getDrivePosition() {
         return m_driveEncoder.getPosition();
+        
     }
     public double getDriveVelocity() {
         return m_driveEncoder.getVelocity();
@@ -49,7 +51,13 @@ public class SwerveModule {
     public double getTurningVelocity() {
         return m_turningEncoder.getVelocity();
     }
-    //public double getAbsoluteEncoderRad() {
+    public SwerveModulePosition getPosition() {
+        // Apply chassis angular offset to the encoder position to get the position
+        // relative to the chassis.
+        return new SwerveModulePosition(
+            m_driveEncoder.getPosition(),
+            new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+    }
 
     
 
@@ -58,27 +66,18 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
-        // if(Math.abs(desiredState.speedMetersPerSecond) < 0.01){    // put in constants
-        //     stop();
-        //     return;
-        // }
-        // final SwerveModuleState state = SwerveModuleState.optimize(desiredState, getState().angle);
-        // m_driveMotor.set(state.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
-        // m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), state.angle.getRadians()));
-
         // apply chassis angular offset to the desired state
         SwerveModuleState correctedState = new SwerveModuleState();
         correctedState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
+        // coreectedState.speedMetersPerSecond = 0 
         correctedState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
-
-        // optimize the reference to avoid spinning further than
+        // optimize the reference to avoid spinning further than 90 degrees
         correctedState.optimize(new Rotation2d(getTurningPosition()));        
-
-
+        
         // Command driving and turnig SPAKRS towards their perspective setpoints
-        // TODO Check if correct, leftover from yt
-        m_driveMotor.set(desiredState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
-        m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), desiredState.angle.getRadians()));
+        // // TODO Check if correct, leftover from yt
+        m_driveMotor.set(correctedState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
+        m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), correctedState.angle.getRadians()));
     }
 
     public void stop() {
