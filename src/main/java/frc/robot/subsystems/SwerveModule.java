@@ -24,8 +24,10 @@ public class SwerveModule {
     private double m_chassisAngularOffset;
 
     private final PIDController m_turningPIDcontroller;
+private final int turningId;
 
     public SwerveModule(int driveMotorId, int turningMotorId, double chassisAngularOffset) {
+turningId = turningMotorId;
         m_chassisAngularOffset = chassisAngularOffset;
 
         m_driveMotor = new SparkFlex(driveMotorId, MotorType.kBrushless);
@@ -35,7 +37,7 @@ public class SwerveModule {
         m_driveEncoder = m_driveMotor.getEncoder();
 
         m_turningPIDcontroller = robot.kPIDTurningController;
-        m_turningPIDcontroller.enableContinuousInput(Math.PI, Math.PI);
+        m_turningPIDcontroller.enableContinuousInput(-Math.PI, Math.PI);
     }   
 
     public double getDrivePosition() {
@@ -69,13 +71,13 @@ public class SwerveModule {
         // apply chassis angular offset to the desired state
         SwerveModuleState correctedState = new SwerveModuleState();
         correctedState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-        // coreectedState.speedMetersPerSecond = 0 
+        // coreectedState.speedMetersPerSecond = 0
         correctedState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
         // optimize the reference to avoid spinning further than 90 degrees
-        correctedState.optimize(new Rotation2d(getTurningPosition()));        
-        
+        correctedState.optimize(new Rotation2d(getTurningPosition()));
         // Command driving and turnig SPAKRS towards their perspective setpoints
         // // TODO Check if correct, leftover from yt
+        // System.out.println("In " + turningId + " angle: " + correctedState.angle);
         m_driveMotor.set(correctedState.speedMetersPerSecond / robot.kPhysicalMaxSpeedMetersPerSecond);
         m_turningMotor.set(m_turningPIDcontroller.calculate(getTurningPosition(), correctedState.angle.getRadians()));
     }
