@@ -102,14 +102,14 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void align(){
-        double yvspeed = m_vision.getyvspeed();
+        double xvspeed = m_vision.getxvspeed();
         double vrotation = m_vision.getvrotation();
 
-        SmartDashboard.putNumber("xvspeed", yvspeed);
+        SmartDashboard.putNumber("xvspeed", xvspeed);
         SmartDashboard.putNumber("vrotation", vrotation);
         
 
-        drive(0, 0, vrotation, false);
+        drive(xvspeed, 0, vrotation, false);
     }
 
     public Command runalign(){

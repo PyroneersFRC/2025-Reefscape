@@ -9,6 +9,7 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase{
     private double m_skew;
     private double m_targetRange;
     private double m_vrotation;
-    private double m_yvspeed;
+    private double m_xvspeed;
 
     public VisionSubsystem() {
      m_camera = new PhotonCamera(visionConstants.kCameraName);
@@ -44,13 +45,13 @@ public class VisionSubsystem extends SubsystemBase{
             m_targetRange = PhotonUtils.calculateDistanceToTargetMeters(
                 visionConstants.kCameraHeightMeters,
                 visionConstants.kTargetHeightMeters,
-                visionConstants.kCameraPitchRadians,
-                visionConstants.kTargetPitchRadians);
-            m_yvspeed = 0;
+                Units.degreesToRadians(-30),
+                Units.degreesToRadians(m_pitch));
+            m_xvspeed = (1.25 - m_targetRange)*0.07;
             m_vrotation = -1.0*m_yaw*0.07;
 
             if(target == null){
-                m_yaw=0;
+                m_yaw=0; //TODO FIX
             }
         }
     }
@@ -65,8 +66,8 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("skew", m_skew);
     }
 
-    public double getyvspeed(){
-        return m_yvspeed;   
+    public double getxvspeed(){
+        return m_xvspeed;   
     }
     public double getvrotation(){
         return m_vrotation;   
