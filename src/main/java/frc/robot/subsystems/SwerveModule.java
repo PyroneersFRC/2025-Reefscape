@@ -24,10 +24,9 @@ public class SwerveModule {
     private double m_chassisAngularOffset;
 
     private final PIDController m_turningPIDcontroller;
-private final int turningId;
+    private final PIDController m_drivePIDController;
 
     public SwerveModule(int driveMotorId, int turningMotorId, double chassisAngularOffset) {
-turningId = turningMotorId;
         m_chassisAngularOffset = chassisAngularOffset;
 
         m_driveMotor = new SparkFlex(driveMotorId, MotorType.kBrushless);
@@ -35,6 +34,8 @@ turningId = turningMotorId;
         
         m_turningEncoder = m_turningMotor.getAbsoluteEncoder();
         m_driveEncoder = m_driveMotor.getEncoder();
+
+        m_drivePIDController = robot.kPIDDriveController;
 
         m_turningPIDcontroller = robot.kPIDTurningController;
         m_turningPIDcontroller.enableContinuousInput(-Math.PI, Math.PI);

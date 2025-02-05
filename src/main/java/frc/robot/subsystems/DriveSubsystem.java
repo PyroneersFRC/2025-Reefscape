@@ -9,6 +9,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CANids;
@@ -32,6 +34,12 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveModule m_RearLeft = new SwerveModule(CANids.kRearLeftDrivingCanId,CANids.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
     private final SwerveModule m_RearRight = new SwerveModule(CANids.kRearRightDrivingCanId,CANids.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
 
+    SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+
+    private final VisionSubsystem m_vision = new VisionSubsystem();
+    
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
     private final SwerveDriveKinematics m_driveKinematics = robot.kDriveKinematics;
@@ -42,8 +50,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_RearLeft.getPosition(),
             m_RearRight.getPosition()
           });
-
-    //private final Pose2d m_Pose2d = new Pose2d(getPose2d().getTranslation(),getPose2d().getRotation());
 
     
     public DriveSubsystem() {
@@ -68,7 +74,7 @@ public class DriveSubsystem extends SubsystemBase {
                 return false;
              } , this);
 
-
+        
     } catch (Exception e) {
       // Handle exception as needed
       e.printStackTrace();
@@ -78,21 +84,44 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
         //System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
 
-        double xSpeedDelivered = 0.3 * xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double ySpeedDelivered = 0.3 * ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double rotationDelivered = 0.3 * rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+        double xSpeedDelivered = 0.1 *xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double ySpeedDelivered = 0.1 *ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
+        double rotationDelivered = 0.1*rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+
+        double xSpeedLimited = xlimiter.calculate(xSpeedDelivered);
+        double ySpeedLimited = ylimiter.calculate(ySpeedDelivered);
+        double rotationSpeedLimited = rotationlimiter.calculate(rotationDelivered);
 
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotationDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
-                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotationDelivered)
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedLimited, ySpeedLimited, rotationSpeedLimited, Rotation2d.fromDegrees(-m_gyro.getAngle()))
+                : new ChassisSpeeds(xSpeedLimited, ySpeedLimited, rotationSpeedLimited)
         );
 
         this.setModuleStates(swerveModuleStates);
     }
 
+    public void align(){
+        double yvspeed = m_vision.getyvspeed();
+        double vrotation = m_vision.getvrotation();
+
+        SmartDashboard.putNumber("xvspeed", yvspeed);
+        SmartDashboard.putNumber("vrotation", vrotation);
+        
+
+        drive(0, 0, vrotation, false);
+    }
+
+    public Command runalign(){
+        return this.run(this::align);
+    }
+
+
+
     @Override
     public void periodic(){
+        //System.out.println(m_gyro.getAngle());
+        SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
         m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -103,6 +132,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
     public void zeroHeading(){
         m_gyro.reset();
+    }
+
+    public Command resetGyro(){
+        return this.runOnce(this::zeroHeading);
     }
 
     public double getHeading() {
@@ -127,7 +160,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
-    
+
         SwerveModuleState[] targetStates = m_driveKinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(targetStates);
       }

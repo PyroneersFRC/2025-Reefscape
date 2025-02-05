@@ -47,9 +47,10 @@ public final class Constants {
   }
 
   public static class robot {
-    public static final PIDConstants kPIDDrive = new PIDConstants(1,0,0);
+    public static final PIDConstants kPIDDrive = new PIDConstants(0.2,0,0);
     public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
     public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+    public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
     
     
     public static final double kPTurning = 0.4;
@@ -60,34 +61,44 @@ public final class Constants {
     public static final double kIElevator = 0;
     public static final double kDElevator = 0;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
-    public static final double kTeleDriveAccelerationUnitsPerSecond = 3;
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 5; //previous 5
+    public static final double kTeleDriveAccelerationUnitsPerSecond = 3; //previous 3
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2*
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
 
 
-    public static final double kTrackWidth = 0.7;
+    public static final double kTrackWidth = 0.65;
     // Distance between right and left wheels
-    public static final double kWheelBase = 0.7;
+    public static final double kWheelBase = 0.65;
     // Distance between front and back wheels
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
 
   }
   public static class xboxConstants {
-    public static final double kDeadband = 0.1;
+    public static final double kDeadband = 0.15;
     public static final int kDriverControllerPort = 0;
 
     public static final int kDriverYAxis = 1;
     public static final int kDriverXAxis = 0;
     public static final int kDriverRotAxis = 4;
     public static final int kDriverFieldOrientedButtonIdx = 1;
+
+  }
+  public static class visionConstants {
+    public static final String kCameraName = "Camera_Module_v2";
+
+    public static final double kCameraHeightMeters = 0.1;
+    public static final double kCameraPitchRadians = Math.PI/2;
+
+    public static final double kTargetHeightMeters = 0.3;
+    public static final double kTargetPitchRadians = Math.PI/2;
   }
 
 

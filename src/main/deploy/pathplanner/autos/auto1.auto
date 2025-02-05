@@ -5,15 +5,17 @@
     "data": {
       "commands": [
         {
+
+          
           "type": "path",
           "data": {
-            "pathName": "Path1"
+            "pathName": "path1"
           }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

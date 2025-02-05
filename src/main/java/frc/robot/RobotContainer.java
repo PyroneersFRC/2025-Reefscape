@@ -6,24 +6,28 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Commands.autoAlignCmd;
 import frc.robot.Constants.xboxConstants;
 import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 
 public class RobotContainer {
 
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-
+  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.xboxConstants.kDriverControllerPort);
+  private final Command m_autoAlign = new autoAlignCmd(m_driveSubsystem,m_visionSubsystem);
 
-  // public RobotContainer() {
+  //public RobotContainer() {
   //     swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
   //             swerveSubsystem,
   //             () -> -driverJoytick.getRawAxis(Constants.xboxConstants.kDriverYAxis),
@@ -33,6 +37,7 @@ public class RobotContainer {
 
 
     public RobotContainer() {
+      configureButtonBindings();
       m_driveSubsystem.setDefaultCommand(Commands.run(
             () ->
                 m_driveSubsystem.drive(
@@ -42,14 +47,16 @@ public class RobotContainer {
                         m_driverController.getLeftX(), xboxConstants.kDeadband),
                     -MathUtil.applyDeadband(
                         m_driverController.getRightX(), xboxConstants.kDeadband),
-                      false), // TODO change to true
+                      true), // TODO change to true
             m_driveSubsystem));
     }
-      // configureButtonBindings();
 
-  // private void configureButtonBindings() {
-  //     new JoystickButton(driverJoytick, 2).whenPressed(() -> swerveSubsystem.zeroHeading());
-  // }
+
+  private void configureButtonBindings() {
+      m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
+      m_driverController.a().whileTrue(m_driveSubsystem.runalign());
+  }
+
 
   public Command getAutonomousCommand() {
     return new PathPlannerAuto("auto1");
