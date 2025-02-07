@@ -9,9 +9,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.robot;
 
-public class ElevatorSubsystem  extends SubsystemBase{
-private final SparkMax m_rightElevatorMotor = new SparkMax(CANids.kRightElevatorCanId, MotorType.kBrushed);
-private final SparkMax m_LeftElevatorMotor = new SparkMax(CANids.kLeftElevatorCanId, MotorType.kBrushed);
-private final PIDController m_elevatorPidController = new PIDController(robot.kPElevator,robot.kIElevator, robot.kDElevator);
 
+public class ElevatorSubsystem  extends SubsystemBase{
+    private final  SparkMax m_rightSparkMax;
+    private final  SparkMax m_leftSparkMax;
+    private final PIDController m_elevatorPIDController;
+
+    public ElevatorSubsystem(int rightMotorID, int leftMotorID){
+        m_leftSparkMax = new SparkMax(leftMotorID, MotorType.kBrushed);
+        m_rightSparkMax = new SparkMax(leftMotorID, MotorType.kBrushed);
+
+        m_elevatorPIDController = robot.kPIDElevator;
+        
+    }
 }

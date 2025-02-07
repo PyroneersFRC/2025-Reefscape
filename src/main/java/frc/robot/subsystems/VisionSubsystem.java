@@ -9,6 +9,10 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +29,12 @@ public class VisionSubsystem extends SubsystemBase{
     private double m_targetRange;
     private double m_vrotation;
     private double m_xvspeed;
+    private double m_tagID;
+    private AprilTagFieldLayout m_aprilTagFieldLayout;
+    private Transform3d m_cameraToRobot;
+    private double m_distanceToTarget;
+    private Pose3d m_targetPose3d;
+    private Pose3d m_robotPose;
 
     public VisionSubsystem() {
      m_camera = new PhotonCamera(visionConstants.kCameraName);
@@ -37,7 +47,8 @@ public class VisionSubsystem extends SubsystemBase{
         PhotonTrackedTarget target = result.getBestTarget();
 
         if(target != null){
-            System.out.println("Found target " + target);
+            //m_aprilTagFieldLayout = AprilTagFieldLayout.loadField();
+            m_tagID = target.getFiducialId();
             m_yaw = target.getYaw();
             m_pitch = target.getPitch();
             m_area = target.getArea();
@@ -47,14 +58,15 @@ public class VisionSubsystem extends SubsystemBase{
                 visionConstants.kTargetHeightMeters,
                 Units.degreesToRadians(-30),
                 Units.degreesToRadians(m_pitch));
-            m_xvspeed = (1.25 - m_targetRange)*0.07;
-            m_vrotation = -1.0*m_yaw*0.07;
-
-            if(target == null){
-                m_yaw=0; //TODO FIX
-            }
+            m_cameraToRobot = visionConstants.cameraToRobot;
+            m_targetPose3d = new Pose3d(0, 0, 0,null);
+            m_robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),m_targetPose3d, m_cameraToRobot);
+}           
+            m_distanceToTarget = PhotonUtils.getDistanceToPose(m_robotPose.toPose2d(),m_targetPose3d.toPose2d());
+            m_xvspeed=0;
+            m_vrotation=0;
         }
-    }
+    
 
     @Override
     public void periodic() {
@@ -62,8 +74,9 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("range", m_targetRange);
         SmartDashboard.putNumber("yaw", m_yaw);
         SmartDashboard.putNumber("pitch", m_pitch);
-        SmartDashboard.putNumber("area", m_area);
-        SmartDashboard.putNumber("skew", m_skew);
+        SmartDashboard.putNumber("pitch", m_pitch);
+        SmartDashboard.putNumber("distance", m_distanceToTarget);
+
     }
 
     public double getxvspeed(){
@@ -72,5 +85,6 @@ public class VisionSubsystem extends SubsystemBase{
     public double getvrotation(){
         return m_vrotation;   
     }
+
 
 }
