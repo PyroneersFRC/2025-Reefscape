@@ -27,21 +27,13 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.xboxConstants.kDriverControllerPort);
-  // private final Command m_autoAlign = new autoAlignCmd(m_driveSubsystem,m_visionSubsystem);
+  //private final Command m_autoAlign = new autoAlignCmd(m_driveSubsystem,m_visionSubsystem);
   private final ElevatorSubsystem  m_elevatorSubsystem = new ElevatorSubsystem(CANids.kRightElevatorCanId, CANids.kLeftElevatorCanId);
-
-  //public RobotContainer() {
-  //     swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-  //             swerveSubsystem,
-  //             () -> -driverJoytick.getRawAxis(Constants.xboxConstants.kDriverYAxis),
-  //             () -> driverJoytick.getRawAxis(Constants.xboxConstants.kDriverXAxis),
-  //             () -> driverJoytick.getRawAxis(Constants.xboxConstants.kDriverRotAxis),
-  //             () -> !driverJoytick.getRawButton(Constants.xboxConstants.kDriverFieldOrientedButtonIdx)));
 
 
     public RobotContainer() {
       configureButtonBindings();
-      m_driveSubsystem.setDefaultCommand(Commands.run(
+            m_driveSubsystem.setDefaultCommand(Commands.run(
             () ->
                 m_driveSubsystem.drive(
                     -MathUtil.applyDeadband(
@@ -50,14 +42,14 @@ public class RobotContainer {
                         m_driverController.getLeftX(), xboxConstants.kDeadband),
                     -MathUtil.applyDeadband(
                         m_driverController.getRightX(), xboxConstants.kDeadband),
-                      true), // TODO change to true
+                      true),
             m_driveSubsystem));
     }
 
 
   private void configureButtonBindings() {
       m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
-      //m_driverController.a().whileTrue(m_driveSubsystem.runalign());
+      //m_driverController.a().whileTrue(m_driveSubsystem.goToPose());
       m_driverController.leftBumper().onTrue(m_elevatorSubsystem.decrease());
       m_driverController.rightBumper().onTrue(m_elevatorSubsystem.accelerate());
       m_driverController.y().onTrue(m_elevatorSubsystem.runElevator());

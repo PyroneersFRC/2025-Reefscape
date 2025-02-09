@@ -7,6 +7,7 @@ package frc.robot;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -65,7 +66,7 @@ public final class Constants {
 
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5; //previous 5
     public static final double kTeleDriveAccelerationUnitsPerSecond = 3; //previous 3
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2*
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2* TODO remove 0.1
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
@@ -101,7 +102,7 @@ public final class Constants {
 
     public static final double kTargetHeightMeters = 0.3;
     public static final double kTargetPitchRadians = Math.PI/2;
-    public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, null);
+    public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, new Rotation3d());
   }
 
 }

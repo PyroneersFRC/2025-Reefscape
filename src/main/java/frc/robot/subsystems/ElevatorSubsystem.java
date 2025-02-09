@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANids;
@@ -27,12 +28,22 @@ public class ElevatorSubsystem  extends SubsystemBase{
             
 
         m_elevatorPIDController = robot.kPIDElevator;
-        m_currentSpeed = 0;
+        m_currentSpeed = 0.35;
     }
 
     public void setVoltage() {
+        SmartDashboard.putNumber("Elevator/cur speed", m_currentSpeed);
         m_leftMotor.set(m_currentSpeed);
-        m_rightMotor.set(-m_currentSpeed);
+        m_rightMotor.set(m_currentSpeed);
+    }
+
+
+    public void periodic(){
+
+    }
+
+    public Command defaultCmd(){
+        return this.run(this::periodic);
     }
 
     public Command runElevator(){
@@ -42,9 +53,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
         return this.runOnce(() ->m_currentSpeed = 0);
     }
     public Command accelerate(){
-        return this.runOnce(() ->m_currentSpeed += 0.1);
+        return this.runOnce(() ->m_currentSpeed += 0.02);
     }
     public Command decrease(){
-        return this.runOnce(() ->m_currentSpeed -= 0.1);
+        return this.runOnce(() ->m_currentSpeed -= 0.02);
     }
 }
