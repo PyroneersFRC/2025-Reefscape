@@ -106,27 +106,27 @@ public class DriveSubsystem extends SubsystemBase {
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                Pose2d.kZero,
+                m_vision.getRobotPoseTag(),
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(1, 0, Rotation2d.kZero),
+                m_vision.getTargetPose(),
                 config);
     
         var thetaController =
             new ProfiledPIDController(
-                0.4, 0, 0, new TrapezoidProfile.Constraints(0.2, 0.2));
+                0.4, 0, 0, new TrapezoidProfile.Constraints(0.5, 0.5));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,
-                this::getPose2d, // Functional interface to feed supplier
+                m_vision::getRobotPoseTag, // Functional interface to feed supplier
                 robot.kDriveKinematics,
     
                 // Position controllers
-                new PIDController(0.4, 0, 0),
-                new PIDController(0.4, 0, 0),
+                new PIDController(0.2, 0, 0),
+                new PIDController(0.2, 0, 0),
                 thetaController,
                 this::setModuleStates,
                 this);

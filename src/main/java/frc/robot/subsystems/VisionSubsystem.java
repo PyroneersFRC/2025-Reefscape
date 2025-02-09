@@ -5,7 +5,9 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -28,9 +30,13 @@ public class VisionSubsystem extends SubsystemBase{
     private double m_distanceToTarget;
     private Pose3d m_targetPose3d;
     private Pose3d m_robotPose;
+    private Pose2d tagPose2d;
+    private Pose2d robotPose2d;
 
     public VisionSubsystem() {
      m_camera = new PhotonCamera(visionConstants.kCameraName);
+     robotPose2d = Pose2d.kZero; //TODO not null
+     tagPose2d = new Pose2d(1, 0, Rotation2d.kZero);
     }
 
     public void updateStuff(){
@@ -50,31 +56,29 @@ public class VisionSubsystem extends SubsystemBase{
                 Units.degreesToRadians(-20),
                 Units.degreesToRadians(m_pitch));
             m_cameraToRobot = visionConstants.cameraToRobot;
-            m_targetPose3d = new Pose3d(0, 0, 0,new Rotation3d());
+            m_targetPose3d = new Pose3d(1, 0, 0,new Rotation3d());
             Transform3d cameraToTarget = target.getBestCameraToTarget();
 
             m_robotPose = PhotonUtils.estimateFieldToRobotAprilTag(cameraToTarget, m_targetPose3d, m_cameraToRobot);
             m_distanceToTarget = PhotonUtils.getDistanceToPose(m_robotPose.toPose2d(),m_targetPose3d.toPose2d());
+            robotPose2d = m_robotPose.toPose2d();
+            tagPose2d = m_targetPose3d.toPose2d();
         }
-
-        m_xvspeed = 0;
-        m_vrotation = 0;
     }
     
 
     @Override
     public void periodic() {
         updateStuff();
-        SmartDashboard.putNumber("range", m_targetRange);
-        SmartDashboard.putNumber("yaw", m_yaw);
-        SmartDashboard.putNumber("pitch", m_pitch);
-        SmartDashboard.putNumber("pitch", m_pitch);
-        SmartDashboard.putNumber("distance", m_distanceToTarget);
-
+        SmartDashboard.putString("Vision/robotPoseTag", robotPose2d.toString());
+        SmartDashboard.putString("Vision/tagPose", tagPose2d.toString());
     }
 
-    public Pose3d getTargetPose(){
-        return m_targetPose3d;
+    public Pose2d getTargetPose(){
+        return tagPose2d;
+    }
+    public Pose2d getRobotPoseTag(){
+        return robotPose2d;
     }
 
 

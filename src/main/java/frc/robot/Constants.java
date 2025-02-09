@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -60,10 +61,6 @@ public final class Constants {
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
 
-    public static final double kPElevator = 1;
-    public static final double kIElevator = 0;
-    public static final double kDElevator = 0;
-
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5; //previous 5
     public static final double kTeleDriveAccelerationUnitsPerSecond = 3; //previous 3
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2* TODO remove 0.1
@@ -105,4 +102,19 @@ public final class Constants {
     public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, new Rotation3d());
   }
 
+  public static class elevatorConstants {
+    public static final double kPElevator = 0.5;
+    public static final double kIElevator = 0;
+    public static final double kDElevator = 0;
+
+    public static final double kElevatorMaxSpeed = 0.4;
+    public static final double kElevatorMaxAcceleration = 0.2;
+
+    public static final double kS = 1.1;
+    public static final double kG = 1.2;
+    public static final double kV = 1.3;
+
+    public static final TrapezoidProfile.Constraints kelevatorConstraints = new TrapezoidProfile.Constraints(kElevatorMaxSpeed, kElevatorMaxAcceleration);
+
+  }
 }

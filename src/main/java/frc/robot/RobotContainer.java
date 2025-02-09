@@ -6,7 +6,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+//import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -25,11 +25,11 @@ public class RobotContainer {
 
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+  // private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.xboxConstants.kDriverControllerPort);
   //private final Command m_autoAlign = new autoAlignCmd(m_driveSubsystem,m_visionSubsystem);
-  private final ElevatorSubsystem  m_elevatorSubsystem = new ElevatorSubsystem(CANids.kRightElevatorCanId, CANids.kLeftElevatorCanId);
-
+  //private final ElevatorSubsystem  m_elevatorSubsystem = new ElevatorSubsystem(CANids.kRightElevatorCanId, CANids.kLeftElevatorCanId);
+  private final Command m_goToPose = m_driveSubsystem.goToPose();
 
     public RobotContainer() {
       configureButtonBindings();
@@ -49,11 +49,11 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
       m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
-      //m_driverController.a().whileTrue(m_driveSubsystem.goToPose());
-      m_driverController.leftBumper().onTrue(m_elevatorSubsystem.decrease());
-      m_driverController.rightBumper().onTrue(m_elevatorSubsystem.accelerate());
-      m_driverController.y().onTrue(m_elevatorSubsystem.runElevator());
-      m_driverController.x().onTrue(m_elevatorSubsystem.stopElevator());
+      m_driverController.a().onTrue(m_goToPose);
+  //     m_driverController.leftBumper().onTrue(m_elevatorSubsystem.decrease());
+  //     m_driverController.rightBumper().onTrue(m_elevatorSubsystem.accelerate());
+  //     m_driverController.y().onTrue(m_elevatorSubsystem.runElevator());
+  //     m_driverController.x().onTrue(m_elevatorSubsystem.stopElevator());
   }
 
 
