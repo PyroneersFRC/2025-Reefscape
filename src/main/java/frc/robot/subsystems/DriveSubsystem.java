@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems;
 
 import java.time.Period;
@@ -37,10 +38,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.robot;
+import frc.robot.Constants.xboxConstants;
 
 
 public class DriveSubsystem extends SubsystemBase {
@@ -54,6 +57,9 @@ public class DriveSubsystem extends SubsystemBase {
     SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
 
     private final VisionSubsystem m_vision = new VisionSubsystem();
+
+    private static final double k1 =0.5;
+    private static final double k2 = 0.3;
     
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
@@ -106,27 +112,27 @@ public class DriveSubsystem extends SubsystemBase {
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                m_vision.getRobotPoseTag(),
+                new Pose2d(0, 0, Rotation2d.kZero),
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                m_vision.getTargetPose(),
+                new Pose2d(0.5, 0, Rotation2d.kZero),
                 config);
     
         var thetaController =
             new ProfiledPIDController(
-                0.4, 0, 0, new TrapezoidProfile.Constraints(0.5, 0.5));
+                0, 0, 0, new TrapezoidProfile.Constraints(0.5, 0.5));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,
-                m_vision::getRobotPoseTag, // Functional interface to feed supplier
+                this::getPose2d, // Functional interface to feed supplier
                 robot.kDriveKinematics,
     
                 // Position controllers
-                new PIDController(0.2, 0, 0),
-                new PIDController(0.2, 0, 0),
+                new PIDController(0, 0, 0),
+                new PIDController(0, 0, 0),
                 thetaController,
                 this::setModuleStates,
                 this);
@@ -136,9 +142,47 @@ public class DriveSubsystem extends SubsystemBase {
         return Commands.sequence(
             new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
             swerveControllerCommand,
-            new InstantCommand(() -> this.drive(0, 0, 0, false)));
+            new InstantCommand(() -> this.drive(0, 0, 0, true)));
     }
     
+    private double BRUH = 0.1;
+    public Command accelerateDriveCmd(){
+        return this.runOnce(() -> {m_frontLeft.m_driveVoltage += BRUH;
+                                    m_frontRight.m_driveVoltage += BRUH;
+                                    m_rearLeft.m_driveVoltage += BRUH;
+                                    m_rearRight.m_driveVoltage += BRUH;
+                                });
+    }
+    public Command deccelerateDriveCmd(){
+        return this.runOnce(() -> {m_frontLeft.m_driveVoltage -= BRUH;
+                                    m_frontRight.m_driveVoltage -= BRUH;
+                                    m_rearLeft.m_driveVoltage -= BRUH;
+                                    m_rearRight.m_driveVoltage-= BRUH;
+                                });
+    }
+    
+    
+    public Command lessPrecise(){
+        return this.runOnce(() -> BRUH *= 10);
+    }
+
+    public Command morePrecise(){
+        return this.runOnce(() -> BRUH /= 10);
+    }
+    public Command accelerateTurningCmd(){
+        return this.runOnce(() -> {m_frontLeft.m_turningVoltage += BRUH;
+                                    m_frontRight.m_turningVoltage += BRUH;
+                                    m_rearLeft.m_turningVoltage += BRUH;
+                                    m_rearRight.m_turningVoltage += BRUH;
+                                });
+    }
+    public Command deccelerateTurningCmd(){
+        return this.runOnce(() -> {m_frontLeft.m_turningVoltage -= BRUH;
+                                    m_frontRight.m_turningVoltage -= BRUH;
+                                    m_rearLeft.m_turningVoltage -= BRUH;
+                                    m_rearRight.m_turningVoltage-= BRUH;
+                                });
+    }
         
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
@@ -148,9 +192,10 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("DriveSubsystem/drive/rotation", rotation);
         SmartDashboard.putBoolean("DriveSubsystem/drive/fieldRelative", fieldRelative);
 
-        double xSpeedDelivered = 0.15*xSpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double ySpeedDelivered = 0.15*ySpeed * robot.kPhysicalMaxSpeedMetersPerSecond;
-        double rotationDelivered = 0.15*rotation * robot.kPhysicalMaxAngularSpeedRadiansPerSecond;
+
+        double xSpeedDelivered = xSpeed;
+        double ySpeedDelivered = ySpeed;
+        double rotationDelivered = rotation;
 
         double xSpeedLimited = xlimiter.calculate(xSpeedDelivered);
         double ySpeedLimited = ylimiter.calculate(ySpeedDelivered);
@@ -172,7 +217,9 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         //System.out.println(m_gyro.getAngle());
-        SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
+        SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
+        SmartDashboard.putString("DriveSubsystem/pose2d", getPose2d().toString());
+        SmartDashboard.putNumber("DriveSubsystem/precision", BRUH);
         m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -246,4 +293,19 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.setDesiredState(desiredStates[3]);
         
     }
+
+    public Command driveWithJoystickCmd(CommandXboxController xboxController){
+        return this.run(
+                () ->
+                    this.drive(
+                        - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                            xboxController.getLeftY(), xboxConstants.kDeadband),
+                        - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                            xboxController.getLeftX(), xboxConstants.kDeadband),
+                        - robot.kPhysicalMaxAngularSpeedRadiansPerSecond * MathUtil.applyDeadband(
+                            xboxController.getRightX(), xboxConstants.kDeadband),
+                        true)
+                );
+    }
+
 }

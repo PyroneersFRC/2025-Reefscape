@@ -40,6 +40,8 @@ public final class Constants {
     public static final int kRightElevatorCanId = 10;
     public static final int kLeftElevatorCanId = 11;
 
+    public static final int KOutakeCanId = 12;
+
   }
 
   public static class DriveConstants {
@@ -52,18 +54,18 @@ public final class Constants {
   public static class robot {
     public static final PIDConstants kPIDDrive = new PIDConstants(0.2,0,0);
     public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
-    public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
-    public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
-    public static final PIDController kPIDElevator = new PIDController(1,0,0);
+    // public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+    // public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
+    // public static final PIDController kPIDElevator = new PIDController(1,0,0);
     
     
     public static final double kPTurning = 0.4;
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 5; //previous 5
-    public static final double kTeleDriveAccelerationUnitsPerSecond = 3; //previous 3
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2* TODO remove 0.1
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 3; //previous 5
+    public static final double kTeleDriveAccelerationUnitsPerSecond = 1; //previous 3
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2* 
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
@@ -84,6 +86,7 @@ public final class Constants {
   public static class xboxConstants {
     public static final double kDeadband = 0.15;
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
 
     public static final int kDriverYAxis = 1;
     public static final int kDriverXAxis = 0;
@@ -103,18 +106,24 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kPElevator = 0.5;
-    public static final double kIElevator = 0;
-    public static final double kDElevator = 0;
+    public static final double kP = 0.5;
+    public static final double kI = 0;
+    public static final double kD = 0;
 
-    public static final double kElevatorMaxSpeed = 0.4;
-    public static final double kElevatorMaxAcceleration = 0.2;
+    public static final double kMaxSpeed = 0.4;
+    public static final double kMaxAcceleration = 0.2;
 
-    public static final double kS = 1.1;
-    public static final double kG = 1.2;
-    public static final double kV = 1.3;
+    public static final double kS = 0.1;
+    public static final double kG = 0.05;
+    public static final double kV = 0;
 
-    public static final TrapezoidProfile.Constraints kelevatorConstraints = new TrapezoidProfile.Constraints(kElevatorMaxSpeed, kElevatorMaxAcceleration);
+    public static final TrapezoidProfile.Constraints kelevatorConstraints = 
+    new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
 
+  }
+  public static class OutakeConstants {
+    public static final double ks = 0.1;
+    public static final double kv = 0.1;
+    public static final double kSetpoint = 1;
   }
 }
