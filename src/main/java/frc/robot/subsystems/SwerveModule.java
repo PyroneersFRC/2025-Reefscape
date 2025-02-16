@@ -27,8 +27,7 @@ public class SwerveModule {
     private double m_chassisAngularOffset;
 
     private final PIDController m_drivePIDController = new PIDController(0, 0, 0);
-    private final ProfiledPIDController m_turningProfiledPIDController = new ProfiledPIDController(1, 0, 0, 
-                                                                                new TrapezoidProfile.Constraints(5, 5));
+    private final PIDController m_turningPIDController = new PIDController(0.6, 0, 0.005); 
     // private final PIDController m_turningPIDController;  // ??
 
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.18, 2.28, 0.37);     //0.37
@@ -50,7 +49,7 @@ public class SwerveModule {
         m_turningEncoder = m_turningMotor.getAbsoluteEncoder();
         m_driveEncoder = m_driveMotor.getEncoder();
 
-        m_turningProfiledPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
 
         switch(driveMotorId) {
@@ -110,15 +109,15 @@ public class SwerveModule {
         double drivePIDOutput = m_drivePIDController.calculate(getDriveVelocity(), desiredState.speedMetersPerSecond);
         double driveFeedforwardOutput = m_driveFeedforward.calculate(desiredState.speedMetersPerSecond);
         
-        double turningPIDOutput = m_turningProfiledPIDController.calculate(getTurningPosition(), desiredState.angle.getRadians());
-        double turningFeedforwardOutput = m_turningFeedforward.calculate(m_turningProfiledPIDController.getSetpoint().velocity);
+        double turningPIDOutput = m_turningPIDController.calculate(getTurningPosition(), desiredState.angle.getRadians());
+       // double turningFeedforwardOutput = m_turningFeedforward.calculate(m_turningProfiledPIDController.getSetpoint().velocity);
 
         // double driveOutput = /*driveFeedforwardOutput + drivePIDOutput */ m_driveVoltage;
         double driveOutput = driveFeedforwardOutput + drivePIDOutput;
-        double turningOutput = turningFeedforwardOutput + turningPIDOutput;
+        double turningOutput = /*turningFeedforwardOutput +*/ turningPIDOutput;
 
-        m_driveMotor.setVoltage(driveOutput);
-        m_turningMotor.setVoltage(turningOutput);
+        m_driveMotor.setVoltage(0);
+        m_turningMotor.set(turningOutput);
 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning voltage", turningOutput);
