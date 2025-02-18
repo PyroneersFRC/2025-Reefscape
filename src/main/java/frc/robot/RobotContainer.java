@@ -30,7 +30,7 @@ public class RobotContainer {
 
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(CANids.kRightElevatorCanId, CANids.kLeftElevatorCanId);
+  private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
   private final OutakeSubsystem m_outakeSubsystem = new OutakeSubsystem(CANids.KOutakeCanId);
 
     public RobotContainer() {
@@ -47,16 +47,9 @@ public class RobotContainer {
       // m_driverController.povRight().onTrue(m_elevatorSubsystem.runElevatorCmd(1));
       // m_driverController.povLeft().onTrue(m_elevatorSubsystem.runElevatorCmd(2));
       // m_driverController.povUp().onTrue(m_elevatorSubsystem.runElevatorCmd(3));
-      m_driverController.rightBumper().onTrue(m_driveSubsystem.accelerateDriveCmd());
-      m_driverController.leftBumper().onTrue(m_driveSubsystem.deccelerateDriveCmd());
-
-      m_driverController.rightTrigger().onTrue(m_driveSubsystem.accelerateTurningCmd());
-      m_driverController.leftTrigger().onTrue(m_driveSubsystem.deccelerateTurningCmd());
-
-      m_driverController.x().onTrue(m_driveSubsystem.morePrecise());
-      m_driverController.y().onTrue(m_driveSubsystem.lessPrecise());
-      
-      // m_driverController.x().onTrue(m_elevatorSubsystem.stopCmd());
+      m_driverController.rightBumper().onTrue(m_elevatorSubsystem.accelerateCmd());
+      m_driverController.leftBumper().onTrue(m_elevatorSubsystem.decellerateCmd());
+      m_driverController.y().onTrue(m_elevatorSubsystem.runElevator());
 
 
   }

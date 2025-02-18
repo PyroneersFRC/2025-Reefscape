@@ -52,9 +52,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveModule m_rearLeft = new SwerveModule(CANids.kRearLeftDrivingCanId,CANids.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
     private final SwerveModule m_rearRight = new SwerveModule(CANids.kRearRightDrivingCanId,CANids.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
 
-    SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    // SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    // SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    // SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
 
     private final VisionSubsystem m_vision = new VisionSubsystem();
 
@@ -193,22 +193,20 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("DriveSubsystem/drive/fieldRelative", fieldRelative);
 
 
-        double xSpeedDelivered = xSpeed;
-        double ySpeedDelivered = ySpeed;
-        double rotationDelivered = rotation;
 
-        double xSpeedLimited = xlimiter.calculate(xSpeedDelivered);
-        double ySpeedLimited = ylimiter.calculate(ySpeedDelivered);
-        double rotationSpeedLimited = rotationlimiter.calculate(rotationDelivered);
 
-        SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed limited", xSpeedLimited);
-        SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed limited", ySpeedLimited);
-        SmartDashboard.putNumber("DriveSubsystem/drive/rotation limited", rotationSpeedLimited);
+        // double xSpeedLimited = xlimiter.calculate(xSpeed);
+        // double ySpeedLimited = ylimiter.calculate(ySpeed);
+        // double rotationSpeedLimited = rotationlimiter.calculate(rotation);
+
+        SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed limited", xSpeed);
+        SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed limited", ySpeed);
+        SmartDashboard.putNumber("DriveSubsystem/drive/rotation limited", rotation);
        
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedLimited, ySpeedLimited, rotationSpeedLimited, Rotation2d.fromDegrees(-m_gyro.getAngle()))
-                : new ChassisSpeeds(xSpeedLimited, ySpeedLimited, rotationSpeedLimited)
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, Rotation2d.fromDegrees(-m_gyro.getAngle()))
+                : new ChassisSpeeds(xSpeed, ySpeed, rotation)
         );
 
         this.setModuleStates(swerveModuleStates);

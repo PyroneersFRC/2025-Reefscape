@@ -19,84 +19,71 @@ import frc.robot.Constants.robot;
 
 
 public class ElevatorSubsystem  extends SubsystemBase{
-    private final SparkMax m_rightMotor;
-    private final SparkMax m_leftMotor;
-    private final AbsoluteEncoder m_encoder;
     private final ProfiledPIDController m_PIDController;
-    private final ElevatorFeedforward m_Feedforward;
+
+    private final ElevatorModule m_elevator;
+
+    private final String SMART_DASHBOARD_PREFIX = "Elevator Subsystem/";
+
     private double m_motorSpeed = 0;
 
-    public ElevatorSubsystem(int rightMotorID, int leftMotorID){
-        m_leftMotor = new SparkMax(leftMotorID, MotorType.kBrushed);
-        m_rightMotor = new SparkMax(rightMotorID, MotorType.kBrushed);
-
-        m_encoder = m_leftMotor.getAbsoluteEncoder();
+    public ElevatorSubsystem(){
         m_PIDController = new ProfiledPIDController(
             elevatorConstants.kP
         ,elevatorConstants.kI
         ,elevatorConstants.kD
         , elevatorConstants.kelevatorConstraints);
-        m_Feedforward = new ElevatorFeedforward(elevatorConstants.kS, elevatorConstants.kG, elevatorConstants.kV);
+
+        m_elevator = new ElevatorModule(CANids.kLeftElevatorCanId, CANids.kRightElevatorCanId);
+
     }
 
 
     @Override
-    public void periodic(){
-        double outputPID = m_PIDController.calculate(m_encoder.getPosition());
-        double outputFeedForward = m_Feedforward.calculate(m_encoder.getVelocity());
+    public void periodic(){;
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
-        double finalOutput =outputPID+outputFeedForward;
-
-        // m_rightMotor.setVoltage(finalOutput);
-        // m_leftMotor.setVoltage(finalOutput);
-        SmartDashboard.putNumber("elevator/Speed", m_motorSpeed);
-        SmartDashboard.putNumber("elevator/potition", m_encoder.getPosition());
-        SmartDashboard.putNumber("elevator/PID+FeedForward", finalOutput);
-        setMotorSpeed(m_motorSpeed);    
-    }
-    public void test(){
-        this.setMotorSpeed(m_motorSpeed);
-    }
-
-    private void setMotorSpeed(double speed){
-        m_rightMotor.setVoltage(-speed);
-        m_leftMotor.setVoltage(-speed);
+        
+        if(m_elevator.getPotition() > 1 || m_elevator.getPotition() < -0.1){
+            this.stop();
         }
+    }
+
  
-    public void setGoal(int stage){
-        if (stage == 0) {
-            m_PIDController.setGoal(0);
-        }
-        else if(stage == 1){
-            m_PIDController.setGoal(0.1);
-        }
-        else if (stage == 2) {
-            m_PIDController.setGoal(0.2);
-        }
-        else if (stage == 3) {
-            m_PIDController.setGoal(0.15);
-        }
-        else{
-            throw new RuntimeException("invalid stage");
-        }
+    public void setDesiredState(){
+        double outputVoltage =  m_PIDController.calculate(m_elevator.getPotition(), 0.5);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX+ "0.5", 0.5);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage", outputVoltage);
+        m_elevator.setMotorSpeed(outputVoltage);
 
+    }
+
+    public Command runElevator(){
+        return this.run(this::setDesiredState);
+    }
+
+    public void stop(){
+        m_elevator.setMotorSpeed(0);
+    }
+    public Command stopCmd(){
+        return this.runOnce(this::stop);
     }
  
  
-    public Command runCmd(){
-        //return this.runOnce(() -> setGoal(stage));
-        return this.run(this::test);
-    }
 
     public Command accelerateCmd(){
-        return this.runOnce(() -> m_motorSpeed += 1).andThen(this::runCmd);
+        return this.runOnce(() -> {m_motorSpeed += 0.5; 
+                                    m_elevator.setMotorSpeed(m_motorSpeed);});
+
     }
 
     public Command decellerateCmd(){
-        return this.runOnce(() -> m_motorSpeed -= 1).andThen(this::runCmd);
-    }
-    public Command stopCmd(){
-        return this.runOnce(() -> m_motorSpeed = 0);
-    }
+        return this.runOnce(() -> { m_motorSpeed -= 0.5;
+                                    m_elevator.setMotorSpeed(m_motorSpeed);});
+        }
+    // public Command stopCmd(){
+    //     return this.runOnce(() -> m_motorSpeed = 0);
+    // }
 }
 

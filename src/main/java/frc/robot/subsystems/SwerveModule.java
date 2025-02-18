@@ -26,7 +26,7 @@ public class SwerveModule {
 
     private double m_chassisAngularOffset;
 
-    private final PIDController m_drivePIDController = new PIDController(0, 0, 0);
+    private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
     private final PIDController m_turningPIDController = new PIDController(0.6, 0, 0.005); 
     // private final PIDController m_turningPIDController;  // ??
 
@@ -113,10 +113,10 @@ public class SwerveModule {
        // double turningFeedforwardOutput = m_turningFeedforward.calculate(m_turningProfiledPIDController.getSetpoint().velocity);
 
         // double driveOutput = /*driveFeedforwardOutput + drivePIDOutput */ m_driveVoltage;
-        double driveOutput = driveFeedforwardOutput + drivePIDOutput;
+        double driveOutput = /*driveFeedforwardOutput +*/ drivePIDOutput;
         double turningOutput = /*turningFeedforwardOutput +*/ turningPIDOutput;
 
-        m_driveMotor.setVoltage(0);
+        m_driveMotor.setVoltage(driveOutput/5);
         m_turningMotor.set(turningOutput);
 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
