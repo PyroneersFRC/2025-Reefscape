@@ -106,20 +106,20 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kP = 1;
+    public static final double kP = 0;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final double kMaxSpeed = 0.4;
-    public static final double kMaxAcceleration = 0.2;
+    public static final double kMaxSpeed = 0.3;
+    public static final double kMaxAcceleration = 0.3;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
 
   }
   public static class OutakeConstants {
-    public static final double ks = 0.1;
-    public static final double kv = 0.1;
+    public static final double ks = 0;
+    public static final double kv = 0;
     public static final double kSetpoint = 1;
   }
 }

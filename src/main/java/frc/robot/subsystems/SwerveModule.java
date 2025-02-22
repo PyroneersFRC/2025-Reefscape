@@ -116,7 +116,7 @@ public class SwerveModule {
         double driveOutput = /*driveFeedforwardOutput +*/ drivePIDOutput;
         double turningOutput = /*turningFeedforwardOutput +*/ turningPIDOutput;
 
-        m_driveMotor.setVoltage(driveOutput/5);
+        m_driveMotor.setVoltage(driveOutput);
         m_turningMotor.set(turningOutput);
 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);

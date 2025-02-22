@@ -23,13 +23,12 @@ public class ElevatorModule {
     }
 
     public double getPotition(){
-        double encoderPotition = -m_encoder.getPosition()+m_zeroPotition;
+        double encoderPotition = - m_encoder.getPosition() + m_zeroPotition;
         return encoderPotition;
     }
 
     public void setMotorSpeed(double outputSpeed){
-        SmartDashboard.putNumber("ele module/last out speed", -outputSpeed);
-        System.out.println("\n\nhere\n\n");
+        SmartDashboard.putNumber("elevator module/last out speed", -outputSpeed);
         m_leftMotor.setVoltage(-outputSpeed);
         m_rightMotor.setVoltage(-outputSpeed);
     }

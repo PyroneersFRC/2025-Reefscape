@@ -50,8 +50,7 @@ public class RobotContainer {
       m_driverController.rightBumper().onTrue(m_elevatorSubsystem.accelerateCmd());
       m_driverController.leftBumper().onTrue(m_elevatorSubsystem.decellerateCmd());
       m_driverController.y().onTrue(m_elevatorSubsystem.runElevator());
-
-
+      m_driverController.x().onTrue(m_elevatorSubsystem.stopCmd());
   }
 
   public Command getAutonomousCommand() {
