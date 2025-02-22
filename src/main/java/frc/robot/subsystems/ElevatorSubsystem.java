@@ -26,7 +26,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         ,elevatorConstants.kD
         , elevatorConstants.kelevatorConstraints);
 
-    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.425, 1, 0);
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.4, 1.4, 0.4);
 
     private final ElevatorModule m_elevator;
 
@@ -41,24 +41,23 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private void potitionSafety(){
         double pos = m_elevator.getPotition();
-        if(pos > 1.5 /* || pos < -0.1*/){
+        if(pos > 3  || pos < -0.1){
             System.out.println("\n\n\n\n\n\n pos " + pos + "\n\n\n\n\n\n\n");
             this.stop();
-            throw new RuntimeException("paixtike malakia");
+            throw new RuntimeException("paixtike malakia, phge sth thesh " + pos);
         }
     }
 
     @Override
     public void periodic(){;
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/real position", m_elevator.m_encoder.getPosition()); 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
-
         potitionSafety(); 
 
-
-        // m_elevator.setMotorSpeed(m_motorSpeed);
+        m_elevator.setMotorSpeed(m_motorSpeed);
     }
     
     private void printSetpoint(TrapezoidProfile.State setpoint){
@@ -76,16 +75,31 @@ public class ElevatorSubsystem  extends SubsystemBase{
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
         
-        if(Math.abs(outputVoltage) > 3){
+        if(Math.abs(outputVoltage) > 4){
             this.stop();
-            throw new RuntimeException("paixtike malakia 2");
+            throw new RuntimeException("paixtike malakia 2 phge na dwsei " + outputVoltage + "volt");
         }
 
         m_elevator.setMotorSpeed(outputVoltage);
     }
 
     public Command runElevator(){
-        return this.run(() -> setDesiredState(0.8));    // TODO fix
+        return this.run(() -> setDesiredState(1.6));    // TODO fix
+    }
+
+    public Command setLevel(int level){
+        double setPoint;
+        if(level == 0){
+            setPoint = 0;
+        } else if(level == 1){
+            setPoint = 1.6;
+        } else if(level == 2){
+            setPoint = 2.3;
+        } else {
+            throw new RuntimeException("Invalid level (" + level + ")");
+        }
+
+        return this.run(() -> setDesiredState(setPoint));
     }
 
     public void stop(){
@@ -95,16 +109,14 @@ public class ElevatorSubsystem  extends SubsystemBase{
         return this.runOnce(this::stop);
     }
  
- 
 
     public Command accelerateCmd(){
-        return this.runOnce(() -> { m_motorSpeed += 0.01; 
+        return this.runOnce(() -> { m_motorSpeed += 0.1; 
                                     m_elevator.setMotorSpeed(m_motorSpeed);});
-
     }
 
     public Command decellerateCmd(){
-        return this.runOnce(() -> { m_motorSpeed -= 0.01;
+        return this.runOnce(() -> { m_motorSpeed -= 0.1;
                                     m_elevator.setMotorSpeed(m_motorSpeed);});
         }
 }

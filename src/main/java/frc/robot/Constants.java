@@ -63,9 +63,9 @@ public final class Constants {
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 3; //previous 5
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 1; //previous 5
     public static final double kTeleDriveAccelerationUnitsPerSecond = 0.2; //previous 3
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;//previous 2*2* 
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = (2*2*Math.PI)/3;//previous 2*2* 
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
@@ -106,12 +106,12 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kP = 0;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double kP = 3;    // hran 2
+    public static final double kI = 0.8;
+    public static final double kD = 0.2;
 
-    public static final double kMaxSpeed = 0.3;
-    public static final double kMaxAcceleration = 0.3;
+    public static final double kMaxSpeed = 2;
+    public static final double kMaxAcceleration = 2;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
