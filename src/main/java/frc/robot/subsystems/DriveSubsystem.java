@@ -1,11 +1,9 @@
 
 package frc.robot.subsystems;
 
-import java.time.Period;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
@@ -14,12 +12,9 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -29,17 +24,14 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.robot;
@@ -54,11 +46,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
     SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    //SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
+    SlewRateLimiter rotationlimiter = new SlewRateLimiter(40);
 
-    private final VisionSubsystem m_vision = new VisionSubsystem();
+    // private final VisionSubsystem m_vision = new VisionSubsystem();
 
-    private static final double k1 =0.5;
+    private static final double k1 = 0.5;
     private static final double k2 = 0.3;
     
 
@@ -187,25 +179,25 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
         //System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
-        SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed", xSpeed);
-        SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed", ySpeed);
-        SmartDashboard.putNumber("DriveSubsystem/drive/rotation", rotation);
-        SmartDashboard.putBoolean("DriveSubsystem/drive/fieldRelative", fieldRelative);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed", xSpeed);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed", ySpeed);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/rotation", rotation);
+        // SmartDashboard.putBoolean("DriveSubsystem/drive/fieldRelative", fieldRelative);
 
 
 
 
-        double xSpeedLimited = xlimiter.calculate(xSpeed);
-        double ySpeedLimited = ylimiter.calculate(ySpeed);
-        // double rotationSpeedLimited = rotationlimiter.calculate(rotation);
+        xSpeed = xlimiter.calculate(xSpeed);
+        ySpeed = ylimiter.calculate(ySpeed);
+        rotation = rotationlimiter.calculate(rotation);
 
-        SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed limited", xSpeedLimited);
-        SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed limited", ySpeedLimited);
-        SmartDashboard.putNumber("DriveSubsystem/drive/rotation limited", rotation);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed limited", xSpeed);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed limited", ySpeed);
+        // SmartDashboard.putNumber("DriveSubsystem/drive/rotation limited", rotation);
        
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedLimited, ySpeedLimited, rotation, Rotation2d.fromDegrees(-m_gyro.getAngle()))
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, Rotation2d.fromDegrees(-m_gyro.getAngle()))
                 : new ChassisSpeeds(xSpeed, ySpeed, rotation)
         );
 
@@ -214,18 +206,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        //System.out.println(m_gyro.getAngle());
-        SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
-        SmartDashboard.putString("DriveSubsystem/pose2d", getPose2d().toString());
-        SmartDashboard.putNumber("DriveSubsystem/precision", BRUH);
+        // SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
+        // SmartDashboard.putString("DriveSubsystem/pose2d", getPose2d().toString());
+        // SmartDashboard.putNumber("DriveSubsystem/precision", BRUH);
+
         m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
+        Rotation2d.fromDegrees(m_gyro.getAngle()), new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
     }
+
+
     public void zeroHeading(){
         m_gyro.reset();
     }

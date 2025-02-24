@@ -7,12 +7,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANids;
 
@@ -27,11 +25,13 @@ public class SwerveModule {
     private double m_chassisAngularOffset;
 
     private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
-    private final PIDController m_turningPIDController = new PIDController(0.6, 0, 0.005); 
-    // private final PIDController m_turningPIDController;  // ??
+    // private final ProfiledPIDController m_turningPIDController = new ProfiledPIDController(
+    //                                             0.6, 0, 0.005, new TrapezoidProfile.Constraints(
+    //                                                 robot.kModuleMaxAngularVelocity, robot.kModuleMaxAngularAcceleration)); 
+    private final PIDController m_turningPIDController = new PIDController(0.6, 0, 0.005);
 
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.18, 2.28, 0.37);     //0.37
-    private final SimpleMotorFeedforward m_turningFeedforward = new SimpleMotorFeedforward(0.4, 0.2, 0);     //
+    private final SimpleMotorFeedforward m_turningFeedforward = new SimpleMotorFeedforward(0.4, 0.2, 0);     
 
     // SmartDashboard prefixes
     private final String SWERVE;
@@ -119,16 +119,16 @@ public class SwerveModule {
         m_driveMotor.setVoltage(driveOutput);
         m_turningMotor.set(turningOutput);
 
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning voltage", turningOutput);
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder velocity", m_driveEncoder.getVelocity());
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder potition", m_driveEncoder.getPosition());
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning voltage", turningOutput);
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder velocity", m_driveEncoder.getVelocity());
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder potition", m_driveEncoder.getPosition());
         
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder velocity", m_turningEncoder.getVelocity());
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder potition", m_turningEncoder.getPosition());
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder velocity", m_turningEncoder.getVelocity());
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder potition", m_turningEncoder.getPosition());
     
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder +pi", m_turningEncoder.getPosition() + (Math.PI/2) % (2*Math.PI));
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder-pi", m_turningEncoder.getPosition() - (Math.PI / 2) % (2*Math.PI));
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder +pi", m_turningEncoder.getPosition() + (Math.PI/2) % (2*Math.PI));
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder-pi", m_turningEncoder.getPosition() - (Math.PI / 2) % (2*Math.PI));
         
         
     }

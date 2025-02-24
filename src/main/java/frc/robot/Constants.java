@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.config.PIDConstants;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +24,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
   public static class CANids {
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 1;
@@ -63,13 +63,15 @@ public final class Constants {
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 1; //previous 5
-    public static final double kTeleDriveAccelerationUnitsPerSecond = 0.2; //previous 3
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = (2*2*Math.PI)/3;//previous 2*2* 
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 4; // previous 5
+    public static final double kTeleDriveAccelerationUnitsPerSecond = 8; // previous 3
+    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI; // previous 2*2* 
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
 
+    public static final double kModuleMaxAngularVelocity = Math.PI / 8;
+    public static final double kModuleMaxAngularAcceleration = 2 * Math.PI / 8;
 
     public static final double kTrackWidth = 0.65;
     // Distance between right and left wheels
@@ -83,6 +85,7 @@ public final class Constants {
 
 
   }
+
   public static class xboxConstants {
     public static final double kDeadband = 0.15;
     public static final int kDriverControllerPort = 0;
@@ -94,6 +97,7 @@ public final class Constants {
     public static final int kDriverFieldOrientedButtonIdx = 1;
 
   }
+
   public static class visionConstants {
     public static final String kCameraName = "Camera_Module_v2";
 
@@ -107,16 +111,17 @@ public final class Constants {
 
   public static class elevatorConstants {
     public static final double kP = 3;    // hran 2
-    public static final double kI = 0.8;
+    public static final double kI = 0;
     public static final double kD = 0.2;
 
-    public static final double kMaxSpeed = 2;
+    public static final double kMaxSpeed = 4;
     public static final double kMaxAcceleration = 2;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
 
   }
+
   public static class OutakeConstants {
     public static final double ks = 0;
     public static final double kv = 0;

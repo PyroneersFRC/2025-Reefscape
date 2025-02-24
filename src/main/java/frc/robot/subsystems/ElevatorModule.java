@@ -35,7 +35,7 @@ public class ElevatorModule {
 
     public void setMotorSpeed(double outputSpeed){
         outputSpeed *= -1;
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "last out speed", outputSpeed);
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "last out speed", outputSpeed);
         m_leftMotor.setVoltage(outputSpeed);
         m_rightMotor.setVoltage(outputSpeed);
     }

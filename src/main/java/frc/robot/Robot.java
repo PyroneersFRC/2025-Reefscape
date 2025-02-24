@@ -44,10 +44,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // If publishing to NetworkTables and DataLog
     DataLogManager.start();
-    URCL.start();
+    // URCL.start();
 
     // If logging only to DataLog
-    URCL.start(DataLogManager.getLog());
+    // URCL.start(DataLogManager.getLog());
   }
 
 
