@@ -33,7 +33,7 @@ public class SwerveModule {
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.18, 2.28, 0.37);     //0.37
     private final SimpleMotorFeedforward m_turningFeedforward = new SimpleMotorFeedforward(0.4, 0.2, 0);     
 
-    // SmartDashboard prefixes
+    //SmartDashboard prefixes
     private final String SWERVE;
     private final String SMART_DASHBOARD_PREFIX;
 

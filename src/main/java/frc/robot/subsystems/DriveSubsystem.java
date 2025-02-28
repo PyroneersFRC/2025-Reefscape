@@ -48,7 +48,9 @@ public class DriveSubsystem extends SubsystemBase {
     SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
     SlewRateLimiter rotationlimiter = new SlewRateLimiter(40);
 
+    private final Rotation2d m_rotation = new Rotation2d(Math.PI/6);
     // private final VisionSubsystem m_vision = new VisionSubsystem();
+
 
     private static final double k1 = 0.5;
     private static final double k2 = 0.3;
@@ -104,16 +106,16 @@ public class DriveSubsystem extends SubsystemBase {
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                new Pose2d(0, 0, Rotation2d.kZero),
+                getPose2d(),
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(0.5, 0, Rotation2d.kZero),
+                getPose2d().rotateBy(new Rotation2d(30)),
                 config);
     
         var thetaController =
             new ProfiledPIDController(
-                0, 0, 0, new TrapezoidProfile.Constraints(0.5, 0.5));
+                0.4, 0, 0.2, new TrapezoidProfile.Constraints(0.5, 0.5));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
     
         SwerveControllerCommand swerveControllerCommand =
@@ -123,8 +125,8 @@ public class DriveSubsystem extends SubsystemBase {
                 robot.kDriveKinematics,
     
                 // Position controllers
-                new PIDController(0, 0, 0),
-                new PIDController(0, 0, 0),
+                new PIDController(3, 0.35, 0),
+                new PIDController(3, 0.35, 0),
                 thetaController,
                 this::setModuleStates,
                 this);
@@ -137,63 +139,12 @@ public class DriveSubsystem extends SubsystemBase {
             new InstantCommand(() -> this.drive(0, 0, 0, true)));
     }
     
-    private double BRUH = 0.1;
-    public Command accelerateDriveCmd(){
-        return this.runOnce(() -> {m_frontLeft.m_driveVoltage += BRUH;
-                                    m_frontRight.m_driveVoltage += BRUH;
-                                    m_rearLeft.m_driveVoltage += BRUH;
-                                    m_rearRight.m_driveVoltage += BRUH;
-                                });
-    }
-    public Command deccelerateDriveCmd(){
-        return this.runOnce(() -> {m_frontLeft.m_driveVoltage -= BRUH;
-                                    m_frontRight.m_driveVoltage -= BRUH;
-                                    m_rearLeft.m_driveVoltage -= BRUH;
-                                    m_rearRight.m_driveVoltage-= BRUH;
-                                });
-    }
-    
-    
-    public Command lessPrecise(){
-        return this.runOnce(() -> BRUH *= 10);
-    }
-
-    public Command morePrecise(){
-        return this.runOnce(() -> BRUH /= 10);
-    }
-    public Command accelerateTurningCmd(){
-        return this.runOnce(() -> {m_frontLeft.m_turningVoltage += BRUH;
-                                    m_frontRight.m_turningVoltage += BRUH;
-                                    m_rearLeft.m_turningVoltage += BRUH;
-                                    m_rearRight.m_turningVoltage += BRUH;
-                                });
-    }
-    public Command deccelerateTurningCmd(){
-        return this.runOnce(() -> {m_frontLeft.m_turningVoltage -= BRUH;
-                                    m_frontRight.m_turningVoltage -= BRUH;
-                                    m_rearLeft.m_turningVoltage -= BRUH;
-                                    m_rearRight.m_turningVoltage-= BRUH;
-                                });
-    }
         
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
-        //System.out.println("xSpeed: " + xSpeed + " ySpeed " + ySpeed + " rotation " + rotation);
-        // SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed", xSpeed);
-        // SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed", ySpeed);
-        // SmartDashboard.putNumber("DriveSubsystem/drive/rotation", rotation);
-        // SmartDashboard.putBoolean("DriveSubsystem/drive/fieldRelative", fieldRelative);
-
-
-
-
         xSpeed = xlimiter.calculate(xSpeed);
         ySpeed = ylimiter.calculate(ySpeed);
         rotation = rotationlimiter.calculate(rotation);
-
-        // SmartDashboard.putNumber("DriveSubsystem/drive/xSpeed limited", xSpeed);
-        // SmartDashboard.putNumber("DriveSubsystem/drive/ySpeed limited", ySpeed);
-        // SmartDashboard.putNumber("DriveSubsystem/drive/rotation limited", rotation);
        
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
@@ -206,9 +157,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        // SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
-        // SmartDashboard.putString("DriveSubsystem/pose2d", getPose2d().toString());
-        // SmartDashboard.putNumber("DriveSubsystem/precision", BRUH);
+        SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
+
 
         m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()), new SwerveModulePosition[] {

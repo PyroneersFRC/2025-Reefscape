@@ -31,23 +31,22 @@ public class RobotContainer {
       m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
       m_driverController.a().onTrue(m_driveSubsystem.goToPose());
 
-      // m_driverController.povDown().onTrue(m_elevatorSubsystem.runElevatorCmd(0));
-      // m_driverController.povRight().onTrue(m_elevatorSubsystem.runElevatorCmd(1));
-      // m_driverController.povLeft().onTrue(m_elevatorSubsystem.runElevatorCmd(2));
-      // m_driverController.povUp().onTrue(m_elevatorSubsystem.runElevatorCmd(3));
-      
-    
 
       m_operatorController.leftBumper().onTrue(m_elevatorSubsystem.setLevel(0));
       m_operatorController.rightBumper().onTrue(m_elevatorSubsystem.setLevel(1));
       m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
       m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
       m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
-      m_operatorController.a().whileTrue(m_outakeSubsystem.intakeCmd()).onFalse(m_outakeSubsystem.zeroCmd());
-      m_operatorController.b().whileTrue(m_outakeSubsystem.outakeCmd()).onFalse(m_outakeSubsystem.zeroCmd());
+      m_operatorController.a().onTrue(m_outakeSubsystem.intakeCmd());
+      m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd()).onFalse(m_outakeSubsystem.zeroCmd());
   }
 
   public Command getAutonomousCommand() {
+
     return new PathPlannerAuto("auto1");
+    
+  }
+  public Command getAutoElevator(){
+    return m_elevatorSubsystem.setLevel(2);
   }
 }

@@ -52,14 +52,14 @@ public final class Constants {
   }
 
   public static class robot {
-    public static final PIDConstants kPIDDrive = new PIDConstants(0.2,0,0);
+    public static final PIDConstants kPIDDrive = new PIDConstants(6,0.8,0);
     public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
     // public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
     // public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
     // public static final PIDController kPIDElevator = new PIDController(1,0,0);
     
     
-    public static final double kPTurning = 0.4;
+    public static final double kPTurning = 0.6;
     public static final double kITurning = 0;
     public static final double kDTurning = 0;
 
@@ -110,12 +110,12 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kP = 3;    // hran 2
+    public static final double kP = 2;    // hran 2
     public static final double kI = 0;
-    public static final double kD = 0.2;
+    public static final double kD = 0.3;
 
-    public static final double kMaxSpeed = 4;
-    public static final double kMaxAcceleration = 2;
+    public static final double kMaxSpeed = 5;
+    public static final double kMaxAcceleration = 3;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
@@ -123,7 +123,7 @@ public final class Constants {
   }
 
   public static class OutakeConstants {
-    public static final double ks = 0;
+    public static final double ks = 2;
     public static final double kv = 0;
     public static final double kSetpoint = 1;
   }

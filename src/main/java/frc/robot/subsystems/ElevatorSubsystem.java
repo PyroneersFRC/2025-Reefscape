@@ -32,7 +32,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private final String SMART_DASHBOARD_PREFIX = "Elevator Subsystem/";
 
-    private double m_motorSpeed = 1.2;
+    private double m_motorSpeed = 0;
 
     public ElevatorSubsystem(){
         m_elevator = new ElevatorModule(CANids.kLeftElevatorCanId, CANids.kRightElevatorCanId);
@@ -41,7 +41,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private void potitionSafety(){
         double pos = m_elevator.getPotition();
-        if(pos > 5  || pos < -0.1){
+        if(pos > 6.6  || pos < -0.1){
             System.out.println("\n\n\n\n\n\n pos " + pos + "\n\n\n\n\n\n\n");
             this.setDesiredState(0);
         }
@@ -49,13 +49,13 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     @Override
     public void periodic(){;
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
         potitionSafety(); 
 
-        m_elevator.setMotorSpeed(m_motorSpeed);
+        //m_elevator.setMotorSpeed(m_motorSpeed);
     }
     
     private void printSetpoint(TrapezoidProfile.State setpoint){
@@ -72,14 +72,14 @@ public class ElevatorSubsystem  extends SubsystemBase{
             outputVoltage = 0;
         }
 
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/total output", outputVoltage);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/total output", outputVoltage);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/pid output", PIDOutput);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
         
         if(Math.abs(outputVoltage) > 7){
             throw new RuntimeException("megalo vlotage elevator: " + outputVoltage);
-            // System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
+            //System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
             // outputVoltage=1;
         }
 
@@ -98,9 +98,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
         } else if(level == 1){
             setPoint = 2.6;
         } else if(level == 2){
-            setPoint = 3.4;
+            setPoint = 4.3;
         } else if(level == 3){
-            setPoint = 4.8;
+            setPoint = 6.4;
         } else {
             throw new RuntimeException("Invalid level (" + level + ")");
         }
