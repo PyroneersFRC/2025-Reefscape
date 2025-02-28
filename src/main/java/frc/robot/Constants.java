@@ -120,6 +120,7 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
 
+    public static final double levelValues[] = new double[]{0, 2.6, 4.3, 6.4};
   }
 
   public static class OutakeConstants {

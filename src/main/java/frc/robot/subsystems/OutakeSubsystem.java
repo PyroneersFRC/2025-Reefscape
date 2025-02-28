@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.OutakeConstants;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 
 public class OutakeSubsystem extends SubsystemBase{
     private final SparkMax m_motor;
@@ -20,14 +21,17 @@ public class OutakeSubsystem extends SubsystemBase{
     private final RelativeEncoder m_encoder;
     private double position;
     private double setPoint;
+
+    private ElevatorSubsystem elevatorSubsystemRef;
     
         
         
 
 
-    public OutakeSubsystem(int CanID){
+    public OutakeSubsystem(int CanID, ElevatorSubsystem elevatorSubsystemRef){
         m_motor = new SparkMax(CanID, MotorType.kBrushless);
         m_encoder = m_motor.getAlternateEncoder();
+        this.elevatorSubsystemRef = elevatorSubsystemRef;
     }
 
     @Override
@@ -62,6 +66,8 @@ public class OutakeSubsystem extends SubsystemBase{
         else{
             System.out.println("\n\n\n\n\n\n nigggggga \n\n\n\n\n");
         }
+
+        // elevatorSubsystemRef.setLevel(ElevatorState.LEVEL_0);
     }
 
     public Command intakeCmd(){
