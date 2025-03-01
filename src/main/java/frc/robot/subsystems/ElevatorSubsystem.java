@@ -1,22 +1,15 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.elevatorConstants;
-import frc.robot.Constants.robot;
 
 
 public class ElevatorSubsystem  extends SubsystemBase{
@@ -42,7 +35,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
     private void potitionSafety(){
         double pos = m_elevator.getPotition();
         if(pos > 6.6  || pos < -0.1){
-            System.out.println("\n\n\n\n\n\n pos " + pos + "\n\n\n\n\n\n\n");
+            System.out.println("\n\n pos " + pos + "\n\n");
             this.setDesiredState(0);
         }
     }
@@ -66,7 +59,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
     public void setDesiredState(double desiredState){
         double PIDOutput = m_PIDController.calculate(m_elevator.getPotition(), desiredState);
         double feedforwardOutput = m_feedforward.calculate(m_PIDController.getSetpoint().velocity);
-        double outputVoltage = PIDOutput + feedforwardOutput;
+        double outputVoltage = PIDOutput+feedforwardOutput;
+        outputVoltage = MathUtil.clamp(outputVoltage, -8, 8);
+        
 
         if(m_PIDController.getSetpoint().position == 0){
             outputVoltage = 0;
@@ -76,12 +71,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/pid output", PIDOutput);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
-        
-        if(Math.abs(outputVoltage) > 8){
-            throw new RuntimeException("megalo vlotage elevator: " + outputVoltage);
-            //System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
-            // outputVoltage=1;
-        }
+
 
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "/output voltage/actual total output", outputVoltage);
         m_elevator.setMotorSpeed(outputVoltage);
