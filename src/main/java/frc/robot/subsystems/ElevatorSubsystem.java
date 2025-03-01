@@ -19,7 +19,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         ,elevatorConstants.kD
         , elevatorConstants.kelevatorConstraints);
 
-    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.7, 1.4, 0.3);   // kg htan 1.4 kai htan kalo!!
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.7, 1.4, 0.3);
 
     private final ElevatorModule m_elevator;
 
@@ -48,12 +48,12 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
         potitionSafety(); 
 
-        //m_elevator.setMotorSpeed(m_motorSpeed);
+        m_elevator.setMotorSpeed(m_motorSpeed);
     }
     
     private void printSetpoint(TrapezoidProfile.State setpoint){
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "profiled pid Setpoint/position", setpoint.position);
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "profiled pid Setpoint/velocity", setpoint.velocity);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "profiled pid Setpoint/position", setpoint.position);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "profiled pid Setpoint/velocity", setpoint.velocity);
     }
  
     public void setDesiredState(double desiredState){
@@ -68,12 +68,12 @@ public class ElevatorSubsystem  extends SubsystemBase{
         }
 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/total output", outputVoltage);
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/pid output", PIDOutput);
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/pid output", PIDOutput);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
 
 
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "/output voltage/actual total output", outputVoltage);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/actual total output", outputVoltage);
         m_elevator.setMotorSpeed(outputVoltage);
     }
 
