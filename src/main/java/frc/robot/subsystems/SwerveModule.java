@@ -134,6 +134,9 @@ public class SwerveModule {
     }
 
 
+    public void setDriveVoltage(double voltage){
+        m_driveMotor.setVoltage(voltage);
+    }
 
     public void stop() {
         m_driveMotor.stopMotor();

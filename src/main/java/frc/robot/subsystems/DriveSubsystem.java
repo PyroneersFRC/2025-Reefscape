@@ -1,6 +1,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -33,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.robot;
@@ -254,5 +257,40 @@ public class DriveSubsystem extends SubsystemBase {
                         true)
                 );
     }
+
+
+    private final SysIdRoutine m_sysIdRoutine = 
+        new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                voltage -> {
+                    m_rearLeft.setDriveVoltage(voltage.in(Volts));
+                    m_frontLeft.setDriveVoltage(voltage.in(Volts));
+                    m_rearRight.setDriveVoltage(voltage.in(Volts));
+                    m_frontRight.setDriveVoltage(voltage.in(Volts));
+                },
+                null,
+                this
+            )
+        );
+
+    /**
+     * Returns a command that will execute a quasistatic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+       return m_sysIdRoutine.quasistatic(direction);
+    }
+
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
+
 
 }
