@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private Command m_autoElevator;
+  private Command m_autoOutake;
 
   private final RobotContainer m_robotContainer;
 
@@ -78,7 +79,7 @@ public class Robot extends TimedRobot {
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
-      //m_autoElevator.schedule();
+      m_autoElevator.schedule();
     }
   }
 

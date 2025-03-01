@@ -52,7 +52,7 @@ public final class Constants {
   }
 
   public static class robot {
-    public static final PIDConstants kPIDDrive = new PIDConstants(6,0.8,0);
+    public static final PIDConstants kPIDDrive = new PIDConstants(3,1,0);
     public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
     // public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
     // public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);

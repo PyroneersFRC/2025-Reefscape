@@ -12,31 +12,28 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.OutakeConstants;
 
 public class OutakeSubsystem extends SubsystemBase{
     private final SparkMax m_motor;
     private final double m_zero = 0;
     private final RelativeEncoder m_encoder;
-    private double position;
-    private double setPoint;
+    private ElevatorSubsystem m_elevatorSubsystemRef;
     
-        
-        
 
 
-    public OutakeSubsystem(int CanID){
+
+    public OutakeSubsystem(int CanID, ElevatorSubsystem elevatorSubsystem){
         m_motor = new SparkMax(CanID, MotorType.kBrushless);
-        m_encoder = m_motor.getAlternateEncoder();
+        m_encoder = m_motor.getEncoder();
+        m_elevatorSubsystemRef = elevatorSubsystem;
+
+
     }
 
     @Override
     public void periodic(){
-        position = m_encoder.getPosition();
-        setPoint = position +1;
-        SmartDashboard.putNumber("encoder potition", position);
-
-
 
     }
 
@@ -49,27 +46,26 @@ public class OutakeSubsystem extends SubsystemBase{
         return this.run(this::zero);
     }
 
-    private void intake(){
-        m_motor.setVoltage(2);
+    private void outakeSlow(){
+        m_motor.setVoltage(1);
     }
     private void outake(){
-        if (position<setPoint){
-            m_motor.setVoltage(-2);
+        double setPoint = m_encoder.getPosition()+5;
+        while(m_encoder.getPosition() < setPoint){
+            m_motor.setVoltage(1.5);
         }
-        else if (position>=setPoint){
-            m_motor.setVoltage(0);
-        }
-        else{
-            System.out.println("\n\n\n\n\n\n nigggggga \n\n\n\n\n");
-        }
+        m_motor.setVoltage(0);
+        System.out.println("lift 0");
+        // m_elevatorSubsystemRef.setLevel(0);
+        
     }
 
-    public Command intakeCmd(){
-        return this.run(this::intake);
+    public Command outakeSlowCmd(){
+        return this.run(this::outakeSlow);
     }
 
     public Command outakeCmd(){
-        return this.run(this::outake);
+        return this.runOnce(this::outake);
     }
 
 }

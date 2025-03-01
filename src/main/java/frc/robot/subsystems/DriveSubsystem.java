@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -97,8 +98,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Create config for trajectory
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    0.1*robot.kPhysicalMaxSpeedMetersPerSecond,
-                    0.1*robot.kTeleDriveAccelerationUnitsPerSecond)
+                    0.3*robot.kPhysicalMaxSpeedMetersPerSecond,
+                    0.3*robot.kTeleDriveAccelerationUnitsPerSecond)
                 // Add kinematics to ensure max speed is actually obeyed
                 .setKinematics(robot.kDriveKinematics);
     
@@ -110,7 +111,7 @@ public class DriveSubsystem extends SubsystemBase {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                getPose2d().rotateBy(new Rotation2d(30)),
+                new Pose2d(getPose2d().getX()+1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI/2))),
                 config);
     
         var thetaController =
@@ -158,6 +159,9 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
+        SmartDashboard.putString("DriveSubsystem/pose", getPose2d().toString());
+
+        
 
 
         m_odometry.update(
@@ -172,6 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroHeading(){
         m_gyro.reset();
+        m_odometry.resetPose(getPose2d());
     }
 
     public Command resetGyro(){

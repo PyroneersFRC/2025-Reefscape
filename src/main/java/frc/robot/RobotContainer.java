@@ -19,7 +19,7 @@ public class RobotContainer {
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
-  private final OutakeSubsystem m_outakeSubsystem = new OutakeSubsystem(CANids.KOutakeCanId);
+  private final OutakeSubsystem m_outakeSubsystem = new OutakeSubsystem(CANids.KOutakeCanId, m_elevatorSubsystem);
 
     public RobotContainer() {
       configureButtonBindings();
@@ -37,16 +37,16 @@ public class RobotContainer {
       m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
       m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
       m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
-      m_operatorController.a().onTrue(m_outakeSubsystem.intakeCmd());
-      m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd()).onFalse(m_outakeSubsystem.zeroCmd());
+      m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd());
+      m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
   }
 
   public Command getAutonomousCommand() {
-
-    return new PathPlannerAuto("auto1");
+    return new PathPlannerAuto("auto1").andThen(m_outakeSubsystem.outakeCmd());
     
   }
   public Command getAutoElevator(){
     return m_elevatorSubsystem.setLevel(2);
   }
+
 }
