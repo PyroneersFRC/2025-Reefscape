@@ -14,22 +14,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.OutakeConstants;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorState;
 
 public class OutakeSubsystem extends SubsystemBase{
     private final SparkMax m_motor;
     private final double m_zero = 0;
     private final RelativeEncoder m_encoder;
-    private ElevatorSubsystem m_elevatorSubsystemRef;
     
 
 
 
-    public OutakeSubsystem(int CanID, ElevatorSubsystem elevatorSubsystem){
+    public OutakeSubsystem(int CanID){
         m_motor = new SparkMax(CanID, MotorType.kBrushless);
         m_encoder = m_motor.getEncoder();
-        m_elevatorSubsystemRef = elevatorSubsystem;
-
 
     }
 
@@ -53,11 +49,9 @@ public class OutakeSubsystem extends SubsystemBase{
     private void outake(){
         double setPoint = m_encoder.getPosition()+5;
         while(m_encoder.getPosition() < setPoint){
-            m_motor.setVoltage(1.5);
+            m_motor.setVoltage(2);
         }
         m_motor.setVoltage(0);
-        System.out.println("lift 0");
-        // m_elevatorSubsystemRef.setLevel(0);
         
     }
 

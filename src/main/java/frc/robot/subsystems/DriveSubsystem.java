@@ -98,8 +98,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Create config for trajectory
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    0.3*robot.kPhysicalMaxSpeedMetersPerSecond,
-                    0.3*robot.kTeleDriveAccelerationUnitsPerSecond)
+                    3*robot.kPhysicalMaxSpeedMetersPerSecond,
+                    3*robot.kTeleDriveAccelerationUnitsPerSecond)
                 // Add kinematics to ensure max speed is actually obeyed
                 .setKinematics(robot.kDriveKinematics);
     
@@ -107,11 +107,12 @@ public class DriveSubsystem extends SubsystemBase {
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                getPose2d(),
+                new Pose2d(0,0,new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(getPose2d().getX()+1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI/2))),
+                //new Pose2d(getPose2d().getX()+1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI/2))),
+                new Pose2d(1,0,new Rotation2d(0)),
                 config);
     
         var thetaController =
@@ -136,11 +137,13 @@ public class DriveSubsystem extends SubsystemBase {
         // command, then stop at the end.
         return Commands.sequence(
             new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
+            new InstantCommand(() -> System.out.println("BEFORE TRAJECTORY"+System.currentTimeMillis())),
             swerveControllerCommand,
+            new InstantCommand(() -> System.out.println("AFTER TRAJECTORY"+System.currentTimeMillis())),
             new InstantCommand(() -> this.drive(0, 0, 0, true)));
     }
     
-        
+    
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
         xSpeed = xlimiter.calculate(xSpeed);
@@ -178,6 +181,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_gyro.reset();
         m_odometry.resetPose(getPose2d());
     }
+
 
     public Command resetGyro(){
         return this.runOnce(this::zeroHeading);

@@ -1,33 +1,25 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.elevatorConstants;
+import frc.robot.Constants.robot;
 
 
 public class ElevatorSubsystem  extends SubsystemBase{
-    public enum ElevatorState {
-        LEVEL_0(elevatorConstants.levelValues[0]), LEVEL_1(elevatorConstants.levelValues[1]), LEVEL_2(elevatorConstants.levelValues[2]), LEVEL_3(elevatorConstants.levelValues[3]);
-
-        private final double encoderValue;
-
-        private ElevatorState(double encoderValue) {
-            this.encoderValue = encoderValue;
-        }
-
-        public double getLevelValue(){
-            return this.encoderValue;
-        }
-    }
-
-    private ElevatorState elevatorState = ElevatorState.LEVEL_0; // this is forcasted position, not actual
-
     private final ProfiledPIDController m_PIDController = new ProfiledPIDController(
             elevatorConstants.kP
         ,elevatorConstants.kI
@@ -87,7 +79,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         
         if(Math.abs(outputVoltage) > 7){
             throw new RuntimeException("megalo vlotage elevator: " + outputVoltage);
-            // System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
+            //System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
             // outputVoltage=1;
         }
 
@@ -99,13 +91,21 @@ public class ElevatorSubsystem  extends SubsystemBase{
         return this.run(() -> setDesiredState(1.6));    // TODO fix
     }
 
-    public Command setLevel(ElevatorState state){
-        if(state != ElevatorState.LEVEL_0 && state != ElevatorState.LEVEL_1 && state != ElevatorState.LEVEL_2 && state != ElevatorState.LEVEL_3){
-            throw new RuntimeException("Invalid level (" + state + ")");
+    public Command setLevel(int level){
+        double setPoint;
+        if(level == 0){
+            setPoint = 0;
+        } else if(level == 1){
+            setPoint = 2.6;
+        } else if(level == 2){
+            setPoint = 4.3;
+        } else if(level == 3){
+            setPoint = 6.4;
+        } else {
+            throw new RuntimeException("Invalid level (" + level + ")");
         }
 
-        elevatorState = state;
-        return this.run(() -> setDesiredState(elevatorState.getLevelValue()));
+        return this.run(() -> setDesiredState(setPoint));
     }
 
 
@@ -126,8 +126,4 @@ public class ElevatorSubsystem  extends SubsystemBase{
         return this.runOnce(() -> { m_motorSpeed -= 0.1;
                                     m_elevator.setMotorSpeed(m_motorSpeed);});
         }
-
-    public ElevatorState getElevatorState(){
-        return elevatorState;
-    }
 }
