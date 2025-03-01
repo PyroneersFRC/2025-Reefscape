@@ -77,7 +77,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
         
-        if(Math.abs(outputVoltage) > 7){
+        if(Math.abs(outputVoltage) > 8){
             throw new RuntimeException("megalo vlotage elevator: " + outputVoltage);
             //System.out.println("\n\n\n\n\n\n eeeeeeeeeeeeeeeeeeeeeeee \n\n\n\n\n");
             // outputVoltage=1;
