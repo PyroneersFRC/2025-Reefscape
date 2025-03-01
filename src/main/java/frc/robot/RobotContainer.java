@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(xboxConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorController = new CommandXboxController(xboxConstants.kOperatorControllerPort);
-
+  private final double m_precision = 1;
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
@@ -23,8 +23,8 @@ public class RobotContainer {
 
     public RobotContainer() {
       configureButtonBindings();
-            m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
-     }
+      m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
+    }
 
 
   private void configureButtonBindings() {

@@ -244,15 +244,15 @@ public class DriveSubsystem extends SubsystemBase {
         
     }
 
-    public Command driveWithJoystickCmd(CommandXboxController xboxController){
+    public Command driveWithJoystickCmd(CommandXboxController xboxController, double precision){
         return this.run(
                 () ->
                     this.drive(
-                        - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                        - robot.kPhysicalMaxSpeedMetersPerSecond * precision * MathUtil.applyDeadband(
                             xboxController.getLeftY(), xboxConstants.kDeadband),
-                        - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                        - robot.kPhysicalMaxSpeedMetersPerSecond * precision * MathUtil.applyDeadband(
                             xboxController.getLeftX(), xboxConstants.kDeadband),
-                        - robot.kPhysicalMaxAngularSpeedRadiansPerSecond * MathUtil.applyDeadband(
+                        - robot.kPhysicalMaxAngularSpeedRadiansPerSecond * precision * MathUtil.applyDeadband(
                             xboxController.getRightX(), xboxConstants.kDeadband),
                         true)
                 );
@@ -261,7 +261,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final SysIdRoutine m_sysIdRoutine = 
         new SysIdRoutine(
-            new SysIdRoutine.Config(),
+            new SysIdRoutine.Config(Volts.of(0.5),Volts.of(2.5),5),
             new SysIdRoutine.Mechanism(
                 voltage -> {
                     double volt = voltage.in(Volts);
