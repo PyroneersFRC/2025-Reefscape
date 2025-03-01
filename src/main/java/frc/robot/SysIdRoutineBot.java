@@ -24,6 +24,9 @@ public class SysIdRoutineBot {
   // The driver's controller
   private final CommandXboxController m_driverController = new CommandXboxController(xboxConstants.kDriverControllerPort);
 
+  public SysIdRoutineBot(){
+    configureBindings();
+  }
   /**
    * Use this method to define bindings between conditions and commands. These are useful for
    * automating robot behaviors based on button and sensor input.
@@ -41,6 +44,9 @@ public class SysIdRoutineBot {
     // once.
     // Using bumpers as a modifier and combining it with the buttons so that we can have both sets
     // of bindings at once
+    
+    m_driverController.b().onTrue(m_drive.resetGyro());
+
     m_driverController
         .a()
         .and(m_driverController.rightBumper())

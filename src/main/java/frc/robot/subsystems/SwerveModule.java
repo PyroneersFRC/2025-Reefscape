@@ -104,7 +104,7 @@ public class SwerveModule {
         // apply chassis angular offset to the desired state
         desiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
         // optimize the reference to avoid spinning further than 90 degrees
-        desiredState.optimize(new Rotation2d(getTurningPosition()));
+        // desiredState.optimize(new Rotation2d(getTurningPosition()));
         
         double drivePIDOutput = m_drivePIDController.calculate(getDriveVelocity(), desiredState.speedMetersPerSecond);
         double driveFeedforwardOutput = m_driveFeedforward.calculate(desiredState.speedMetersPerSecond);
@@ -116,7 +116,7 @@ public class SwerveModule {
         double driveOutput = /*driveFeedforwardOutput +*/ drivePIDOutput;
         double turningOutput = /*turningFeedforwardOutput +*/ turningPIDOutput;
 
-        m_driveMotor.setVoltage(driveOutput);
+        // m_driveMotor.setVoltage(driveOutput);   // out for sysid
         m_turningMotor.set(turningOutput);
 
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);

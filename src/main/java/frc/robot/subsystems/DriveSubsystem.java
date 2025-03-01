@@ -17,7 +17,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -27,6 +26,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -264,10 +264,13 @@ public class DriveSubsystem extends SubsystemBase {
             new SysIdRoutine.Config(),
             new SysIdRoutine.Mechanism(
                 voltage -> {
-                    m_rearLeft.setDriveVoltage(voltage.in(Volts));
-                    m_frontLeft.setDriveVoltage(voltage.in(Volts));
-                    m_rearRight.setDriveVoltage(voltage.in(Volts));
-                    m_frontRight.setDriveVoltage(voltage.in(Volts));
+                    double volt = voltage.in(Volts);
+                    this.drive(0, 0, 1, true);
+                    m_rearLeft.setDriveVoltage(volt); 
+                    m_frontLeft.setDriveVoltage(volt);
+                    m_rearRight.setDriveVoltage(volt);
+                    m_frontRight.setDriveVoltage(volt);
+                    System.out.println(volt);
                 },
                 null,
                 this
