@@ -23,10 +23,14 @@ public class RobotContainer {
     public RobotContainer() {
 		m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
 
-		new Trigger(m_elevatorSubsystem::outsideLimits).onTrue(m_elevatorSubsystem.setLevel(0));
+		new Trigger(m_elevatorSubsystem::outsideLimits).onTrue(umm());
 		configureButtonBindings();
-     }
+	}
 
+	private Command umm(){
+		System.out.println("\n\nWTF Hit Limits\n");
+		return m_elevatorSubsystem.setLevel(0);
+	}
 
 	private void configureButtonBindings() {
 		configureOperatorBindings();

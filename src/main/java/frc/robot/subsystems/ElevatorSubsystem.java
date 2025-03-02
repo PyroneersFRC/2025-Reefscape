@@ -35,7 +35,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
     
     public boolean outsideLimits(){
         double pos = m_elevator.getPotition();
-        return pos > 6.6 || pos < -0.1;     // 6.6 bro
+        return pos > 6.72 || pos < -0.1;     // 6.6 bro
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
-        m_elevator.setMotorSpeed(m_motorSpeed);
+        // m_elevator.setMotorSpeed(m_motorSpeed);
     }
     
     private void printSetpoint(TrapezoidProfile.State setpoint){
@@ -87,10 +87,10 @@ public class ElevatorSubsystem  extends SubsystemBase{
                 setPoint = 2.6;
                 break;
             case 2:
-                setPoint = 4.3;
+                setPoint = 4.4;
                 break;
             case 3:
-                setPoint = 6.4;
+                setPoint = 6.55;
                 break;
             default:
                 throw new RuntimeException("Invalid level (" + level + ")");
