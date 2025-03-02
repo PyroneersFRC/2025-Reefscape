@@ -32,12 +32,12 @@ public class RobotContainer {
 
 
 
-      m_operatorController.povUp().onTrue(m_elevatorSubsystem.accelerateCmd());
-      m_operatorController.povDown().onTrue(m_elevatorSubsystem.decellerateCmd());
+      // m_operatorController.povUp().onTrue(m_elevatorSubsystem.accelerateCmd());
+      // m_operatorController.povDown().onTrue(m_elevatorSubsystem.decellerateCmd());
       m_operatorController.leftBumper().onTrue(m_elevatorSubsystem.setLevel(0));
-      // m_operatorController.rightBumper().onTrue(m_elevatorSubsystem.setLevel(1));
-      // m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
-      // m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
+      m_operatorController.rightBumper().onTrue(m_elevatorSubsystem.setLevel(1));
+      m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
+      m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
       m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
       m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(m_elevatorSubsystem.setLevel(0)));
       m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());

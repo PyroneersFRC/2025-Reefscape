@@ -19,7 +19,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         ,elevatorConstants.kD
         , elevatorConstants.kelevatorConstraints);
 
-    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.7, 1.4, 0.3);
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.65, 1.3, 0.3);   // mikres 0.5, 1.1, 0.3
 
     private final ElevatorModule m_elevator;
 
@@ -59,7 +59,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
     public void setDesiredState(double desiredState){
         double PIDOutput = m_PIDController.calculate(m_elevator.getPotition(), desiredState);
         double feedforwardOutput = m_feedforward.calculate(m_PIDController.getSetpoint().velocity);
-        double outputVoltage = PIDOutput+feedforwardOutput;
+        double outputVoltage = PIDOutput + feedforwardOutput;
         outputVoltage = MathUtil.clamp(outputVoltage, -8, 8);
         
 
