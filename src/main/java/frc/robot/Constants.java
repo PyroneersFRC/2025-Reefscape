@@ -120,8 +120,8 @@ public final class Constants {
     public static final double kG = 1.2;
     public static final double kV = 0.55;
 
-    public static final double kMaxSpeed = 1;
-    public static final double kMaxAcceleration = 1;
+    public static final double kMaxSpeed = 4;
+    public static final double kMaxAcceleration = 2;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
