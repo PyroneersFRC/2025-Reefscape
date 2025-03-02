@@ -43,8 +43,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
     @Override
     public void periodic(){;
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/zori", 3.5);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
         potitionSafety(); 
 

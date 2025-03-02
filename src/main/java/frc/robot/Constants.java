@@ -110,9 +110,9 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kP = 0.8;    // hran 2
-    public static final double kI = 0.4;
-    public static final double kD = 0.2;
+    public static final double kP = 2;    // hran
+    public static final double kI = 0.6;   // hran 0.4
+    public static final double kD = 0.2;  // htan 0.2
 
     public static final double kMaxSpeed = 3;
     public static final double kMaxAcceleration = 2;
