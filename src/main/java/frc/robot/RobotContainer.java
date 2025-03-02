@@ -9,6 +9,7 @@ import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 
 public class RobotContainer {
@@ -21,6 +22,7 @@ public class RobotContainer {
   private final OutakeSubsystem m_outakeSubsystem = new OutakeSubsystem(CANids.KOutakeCanId);
 
     public RobotContainer() {
+      new Trigger(m_elevatorSubsystem::outsideLimits).onTrue(m_elevatorSubsystem.setLevel(0));
       configureButtonBindings();
             m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
      }
@@ -41,6 +43,8 @@ public class RobotContainer {
       m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
       m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(m_elevatorSubsystem.setLevel(0)));
       m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
+
+
   }
 
   public Command getAutonomousCommand() {

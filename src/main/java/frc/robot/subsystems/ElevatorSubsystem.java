@@ -19,7 +19,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         ,elevatorConstants.kD
         , elevatorConstants.kelevatorConstraints);
 
-    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(0.65, 1.3, 0.3);   // mikres 0.5, 1.1, 0.3
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(elevatorConstants.kS, elevatorConstants.kG, elevatorConstants.kV);   // mikres 0.5, 1.1, 0.3
 
     private final ElevatorModule m_elevator;
 
@@ -29,15 +29,13 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     public ElevatorSubsystem(){
         m_elevator = new ElevatorModule(CANids.kLeftElevatorCanId, CANids.kRightElevatorCanId);
+        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/pid values", "P: " + elevatorConstants.kP + " I: " + elevatorConstants.kI + " D: " + elevatorConstants.kD);
+        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/feeddorward values", "Ks: " + elevatorConstants.kS + " kG: " + elevatorConstants.kG + " kV: " + elevatorConstants.kV);
     }
     
-
-    private void potitionSafety(){
+    public boolean outsideLimits(){
         double pos = m_elevator.getPotition();
-        if(pos > 6.6  || pos < -0.1){
-            System.out.println("\n\n pos " + pos + "\n\n");
-            this.setDesiredState(0);
-        }
+        return pos > 6.6 || pos < -0.1;     // 6.6 bro
     }
 
     @Override
@@ -45,9 +43,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/zori", 3.5);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
-
-        potitionSafety(); 
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
         m_elevator.setMotorSpeed(m_motorSpeed);
     }
@@ -72,7 +68,6 @@ public class ElevatorSubsystem  extends SubsystemBase{
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/pid output", PIDOutput);
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/feedforward output", feedforwardOutput);
         printSetpoint(m_PIDController.getSetpoint());
-
 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "output voltage/actual total output", outputVoltage);
         m_elevator.setMotorSpeed(outputVoltage);

@@ -110,12 +110,18 @@ public final class Constants {
   }
 
   public static class elevatorConstants {
-    public static final double kP = 2;    // hran
-    public static final double kI = 0.6;   // hran 0.4
-    public static final double kD = 0.2;  // htan 0.2
+    // PID Values
+    public static final double kP = 0;    // hran
+    public static final double kI = 0;   // hran 0.4
+    public static final double kD = 0;  // htan 0.2
 
-    public static final double kMaxSpeed = 3;
-    public static final double kMaxAcceleration = 2;
+    // Feedforward Values;
+    public static final double kS = 0.6;
+    public static final double kG = 1.2;
+    public static final double kV = 0.4;
+
+    public static final double kMaxSpeed = 1;
+    public static final double kMaxAcceleration = 1;
 
     public static final TrapezoidProfile.Constraints kelevatorConstraints = 
     new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
