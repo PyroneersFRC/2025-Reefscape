@@ -55,10 +55,7 @@ public class RobotContainer {
 	}
 
 	public Command getAutonomousCommand() {
-		return new PathPlannerAuto("auto1").andThen(m_outakeSubsystem.outakeCmd());
+		return new PathPlannerAuto("auto1").alongWith(m_elevatorSubsystem.setLevel(1)).andThen(m_outakeSubsystem.outakeCmd());
 	}
 
-	public Command getAutoElevator(){
-		return m_elevatorSubsystem.setLevel(1);
-	}
 }
