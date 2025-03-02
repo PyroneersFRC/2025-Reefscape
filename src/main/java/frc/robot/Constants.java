@@ -118,7 +118,7 @@ public final class Constants {
     // Feedforward Values;
     public static final double kS = 0.6;
     public static final double kG = 1.2;
-    public static final double kV = 0.4;
+    public static final double kV = 0.25;
 
     public static final double kMaxSpeed = 1;
     public static final double kMaxAcceleration = 1;

@@ -82,9 +82,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
         if(level == 0){
             setPoint = 0;
         } else if(level == 1){
-            setPoint = 2.6;
+            setPoint = 2.6;     
         } else if(level == 2){
-            setPoint = 4.3;
+            setPoint = 5;  //4.3
         } else if(level == 3){
             setPoint = 6.4;
         } else {
