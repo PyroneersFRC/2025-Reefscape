@@ -79,16 +79,21 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     public Command setLevel(int level){
         double setPoint;
-        if(level == 0){
-            setPoint = 0;
-        } else if(level == 1){
-            setPoint = 5;  //2.6    
-        } else if(level == 2){
-            setPoint = 4.3;  
-        } else if(level == 3){
-            setPoint = 6.4;
-        } else {
-            throw new RuntimeException("Invalid level (" + level + ")");
+        switch(level){
+            case 0:
+                setPoint = 0;
+                break;
+            case 1:
+                setPoint = 2.6;
+                break;
+            case 2:
+                setPoint = 4.3;
+                break;
+            case 3:
+                setPoint = 6.4;
+                break;
+            default:
+                throw new RuntimeException("Invalid level (" + level + ")");
         }
 
         return this.run(() -> setDesiredState(setPoint));
@@ -98,10 +103,10 @@ public class ElevatorSubsystem  extends SubsystemBase{
     public void stop(){
         m_elevator.setMotorSpeed(0);
     }
+    
     public Command stopCmd(){
         return this.runOnce(this::stop);
     }
- 
 
     public Command accelerateCmd(){
         return this.runOnce(() -> { m_motorSpeed += 0.1; 

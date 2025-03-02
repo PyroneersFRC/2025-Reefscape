@@ -15,7 +15,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -49,29 +48,28 @@ public class DriveSubsystem extends SubsystemBase {
     SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
     SlewRateLimiter rotationlimiter = new SlewRateLimiter(40);
 
-    private final Rotation2d m_rotation = new Rotation2d(Math.PI/6);
-    // private final VisionSubsystem m_vision = new VisionSubsystem();
-
-
-    private static final double k1 = 0.5;
-    private static final double k2 = 0.3;
-    
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
+
     private final SwerveDriveKinematics m_driveKinematics = robot.kDriveKinematics;
-    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_driveKinematics,
-          Rotation2d.fromDegrees(m_gyro.getAngle()),new SwerveModulePosition[] {
+
+    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_driveKinematics,
+          Rotation2d.fromDegrees(m_gyro.getAngle()), new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
           });
 
+    private String SMART_DASHBOARD_PREFIX = "Drive Subsystem/";
     
     public DriveSubsystem() {
-        RobotConfig config;
+        pathplannerConfig();
+    }
+    
+    private void pathplannerConfig(){
         try {
-            config = RobotConfig.fromGUISettings();
+            RobotConfig config = RobotConfig.fromGUISettings();
             // Configure AutoBuilder
             AutoBuilder.configure(
                 this::getPose2d, 
@@ -94,12 +92,13 @@ public class DriveSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
     }
+
     public Command goToPose() {
         // Create config for trajectory
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    3*robot.kPhysicalMaxSpeedMetersPerSecond,
-                    3*robot.kTeleDriveAccelerationUnitsPerSecond)
+                    robot.kPhysicalMaxSpeedMetersPerSecond,
+                    robot.kTeleDriveAccelerationUnitsPerSecond)
                 // Add kinematics to ensure max speed is actually obeyed
                 .setKinematics(robot.kDriveKinematics);
     
@@ -161,11 +160,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        SmartDashboard.putNumber("DriveSubsystem/Gyro", m_gyro.getAngle());
-        SmartDashboard.putString("DriveSubsystem/pose", getPose2d().toString());
-
-        
-
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "Gyro", m_gyro.getAngle());
+        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "Pose", getPose2d().toString());
 
         m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()), new SwerveModulePosition[] {
@@ -218,7 +214,12 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public ChassisSpeeds getCurrentSpeeds(){
-        return m_driveKinematics.toChassisSpeeds(new SwerveModuleState[]{m_frontLeft.getState(),m_frontRight.getState(),m_rearLeft.getState(),m_rearRight.getState()});
+        return m_driveKinematics.toChassisSpeeds(new SwerveModuleState[]{
+            m_frontLeft.getState(), 
+            m_frontRight.getState(),
+            m_rearLeft.getState(),
+            m_rearRight.getState()
+        });
     }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
@@ -226,7 +227,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         SwerveModuleState[] targetStates = m_driveKinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(targetStates);
-      }
+    }
 
     public void stopModules() {
         m_rearLeft.stop();
@@ -242,7 +243,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.setDesiredState(desiredStates[1]);
         m_rearLeft.setDesiredState(desiredStates[2]);
         m_rearRight.setDesiredState(desiredStates[3]);
-        
     }
 
     public Command driveWithJoystickCmd(CommandXboxController xboxController){

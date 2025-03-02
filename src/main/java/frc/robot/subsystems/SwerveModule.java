@@ -11,7 +11,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANids;
 
 
@@ -67,6 +66,7 @@ public class SwerveModule {
                 break;
             default:
                 SWERVE = "Unknown WTF";
+                System.out.println("\n\nummm..\n");
                 break;
         }
 
@@ -95,9 +95,14 @@ public class SwerveModule {
             m_driveEncoder.getPosition(),
             new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
     }
-
+    
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition() - m_chassisAngularOffset));
+    }
+    
+    public void stop() {
+        m_driveMotor.stopMotor();
+        m_turningMotor.stopMotor();
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
@@ -131,13 +136,6 @@ public class SwerveModule {
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder-pi", m_turningEncoder.getPosition() - (Math.PI / 2) % (2*Math.PI));
         
         
-    }
-
-
-
-    public void stop() {
-        m_driveMotor.stopMotor();
-        m_turningMotor.stopMotor();
     }
 
 }

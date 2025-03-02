@@ -21,117 +21,118 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
+	public static class OperatorConstants {
+		public static final int kDriverControllerPort = 0;
+	}
 
-  public static class CANids {
-    // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 1;
-    public static final int kRearLeftDrivingCanId = 5;
-    public static final int kFrontRightDrivingCanId = 7;
-    public static final int kRearRightDrivingCanId = 3;
+	public static class CANids {
+		// SPARK MAX CAN IDs
+		public static final int kFrontLeftDrivingCanId = 1;
+		public static final int kRearLeftDrivingCanId = 5;
+		public static final int kFrontRightDrivingCanId = 7;
+		public static final int kRearRightDrivingCanId = 3;
 
-    public static final int kFrontLeftTurningCanId = 2;
-    public static final int kRearLeftTurningCanId = 6;
-    public static final int kFrontRightTurningCanId = 8;
-    public static final int kRearRightTurningCanId = 4;
+		public static final int kFrontLeftTurningCanId = 2;
+		public static final int kRearLeftTurningCanId = 6;
+		public static final int kFrontRightTurningCanId = 8;
+		public static final int kRearRightTurningCanId = 4;
 
-    public static final int kRightElevatorCanId = 10;
-    public static final int kLeftElevatorCanId = 11;
+		public static final int kRightElevatorCanId = 10;
+		public static final int kLeftElevatorCanId = 11;
 
-    public static final int KOutakeCanId = 12;
+		public static final int KOutakeCanId = 12;
 
-  }
+	}
 
-  public static class DriveConstants {
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
-  }
+	public static class DriveConstants {
+		public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+		public static final double kFrontRightChassisAngularOffset = 0;
+		public static final double kBackLeftChassisAngularOffset = Math.PI;
+		public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+	}
 
-  public static class robot {
-    public static final PIDConstants kPIDDrive = new PIDConstants(3,1,0);
-    public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
-    // public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
-    // public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
-    // public static final PIDController kPIDElevator = new PIDController(1,0,0);
-    
-    
-    public static final double kPTurning = 0.6;
-    public static final double kITurning = 0;
-    public static final double kDTurning = 0;
+	public static class robot {
+		public static final PIDConstants kPIDDrive = new PIDConstants(3,1,0);
+		public static final PIDConstants kPIDTurning = new PIDConstants(robot.kPTurning,robot.kITurning,robot.kDTurning);
+		// public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
+		// public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
+		// public static final PIDController kPIDElevator = new PIDController(1,0,0);
+		
+		
+		public static final double kPTurning = 0.6;
+		public static final double kITurning = 0;
+		public static final double kDTurning = 0;
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7; // previous 5
-    public static final double kTeleDriveAccelerationUnitsPerSecond = 8; // previous 3
-    public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI; // previous 2*2* 
+		public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7; // previous 5
+		public static final double kTeleDriveAccelerationUnitsPerSecond = 8; // previous 3
+		public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI; // previous 2*2* 
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+		public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
+		public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
 
-    public static final double kModuleMaxAngularVelocity = Math.PI / 8;
-    public static final double kModuleMaxAngularAcceleration = 2 * Math.PI / 8;
+		public static final double kModuleMaxAngularVelocity = Math.PI / 8;
+		public static final double kModuleMaxAngularAcceleration = 2 * Math.PI / 8;
 
-    public static final double kTrackWidth = 0.65;
-    // Distance between right and left wheels
-    public static final double kWheelBase = 0.65;
-    // Distance between front and back wheels
-    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+		public static final double kTrackWidth = 0.65;
+		// Distance between right and left wheels
+		public static final double kWheelBase = 0.65;
+		// Distance between front and back wheels
+		public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+				new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+				new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+				new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+				new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
 
-  }
+	}
 
-  public static class xboxConstants {
-    public static final double kDeadband = 0.15;
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
+	public static class xboxConstants {
+		public static final double kDeadband = 0.15;
+		public static final int kDriverControllerPort = 0;
+		public static final int kOperatorControllerPort = 1;
 
-    public static final int kDriverYAxis = 1;
-    public static final int kDriverXAxis = 0;
-    public static final int kDriverRotAxis = 4;
-    public static final int kDriverFieldOrientedButtonIdx = 1;
+		public static final int kDriverYAxis = 1;
+		public static final int kDriverXAxis = 0;
+		public static final int kDriverRotAxis = 4;
+		public static final int kDriverFieldOrientedButtonIdx = 1;
 
-  }
+	}
 
-  public static class visionConstants {
-    public static final String kCameraName = "Camera_Module_v2";
+	public static class visionConstants {
+		public static final String kCameraName = "Camera_Module_v2";
 
-    public static final double kCameraHeightMeters = 0.1;
-    public static final double kCameraPitchRadians = Math.PI/2;
+		public static final double kCameraHeightMeters = 0.1;
+		public static final double kCameraPitchRadians = Math.PI / 2;
 
-    public static final double kTargetHeightMeters = 0.3;
-    public static final double kTargetPitchRadians = Math.PI/2;
-    public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, new Rotation3d());
-  }
+		public static final double kTargetHeightMeters = 0.3;
+		public static final double kTargetPitchRadians = Math.PI / 2;
+		public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, new Rotation3d());
+	}
 
-  public static class elevatorConstants {
-    // PID Values
-    public static final double kP = 1.2;    // hran
-    public static final double kI = 0;   // hran 0.4
-    public static final double kD = 0;  // htan 0.2
+	public static class elevatorConstants {
+		// PID Values
+		public static final double kP = 1.2;  // hran
+		public static final double kI = 0;   // hran 0.4
+		public static final double kD = 0;  // htan 0.2
 
-    // Feedforward Values;
-    public static final double kS = 0.6;
-    public static final double kG = 1.2;
-    public static final double kV = 0.55;
+		// Feedforward Values;
+		public static final double kS = 0.6;
+		public static final double kG = 1.2;
+		public static final double kV = 0.6;
 
-    public static final double kMaxSpeed = 4;
-    public static final double kMaxAcceleration = 2;
+		public static final double kMaxSpeed = 4;
+		public static final double kMaxAcceleration = 2;
 
-    public static final TrapezoidProfile.Constraints kelevatorConstraints = 
-    new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
+		public static final TrapezoidProfile.Constraints kelevatorConstraints = 
+		new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
 
-    public static final double levelValues[] = new double[]{0, 2.6, 4.3, 6.4};
-  }
+		public static final double levelValues[] = new double[]{0, 2.6, 4.3, 6.4};
+	}
 
-  public static class OutakeConstants {
-    public static final double ks = 2;
-    public static final double kv = 0;
-    public static final double kSetpoint = 1;
-  }
+	public static class OutakeConstants {
+		public static final double ks = 2;
+		public static final double kv = 0;
+		public static final double kSetpoint = 1;
+	}
+
 }
