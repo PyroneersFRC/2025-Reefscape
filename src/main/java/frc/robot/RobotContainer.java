@@ -1,15 +1,13 @@
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.OutakeSubsystem;
+import frc.robot.subsystems.DriveSubsystem.Mode;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -42,7 +40,8 @@ public class RobotContainer {
   
 	private void configureDriverBindings(){
 		m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
-		m_driverController.leftTrigger().whileTrue(m_driveSubsystem.precisionModeOn()).whileFalse(m_driveSubsystem.precisionModeOff());
+		m_driverController.leftTrigger().onTrue(m_driveSubsystem.setMode(Mode.Precision)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
+		m_driverController.rightTrigger().onTrue(m_driveSubsystem.setMode(Mode.Turbo)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
 	}
   
     private void configureOperatorBindings(){
