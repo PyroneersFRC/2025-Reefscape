@@ -26,17 +26,10 @@ public class OutakeSubsystem extends SubsystemBase{
 
     }
 
-    private void zero(){
-        m_motor.setVoltage(m_zero);
-    }
-
     public Command zeroCmd(){
-        return this.run(this::zero);
+        return this.run(() -> m_motor.setVoltage(m_zero));
     }
 
-    private void outakeSlow(){
-        m_motor.setVoltage(1);
-    }
     private void outake(){
         double setPoint = m_encoder.getPosition()+5;
         while(m_encoder.getPosition() < setPoint){
@@ -46,11 +39,16 @@ public class OutakeSubsystem extends SubsystemBase{
     }
 
     public Command outakeSlowCmd(){
-        return this.run(this::outakeSlow);
+        return this.run(() -> m_motor.setVoltage(1));
     }
 
     public Command outakeCmd(){
         return this.runOnce(this::outake);
     }
-
+    public Command emergencyCmd(){
+        return this.run(() -> m_motor.setVoltage(3));
+    }
+    public Command reverseCmd(){
+        return this.run(() -> m_motor.setVoltage(-1.3));
+    }
 }

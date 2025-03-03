@@ -6,8 +6,10 @@ import frc.robot.subsystems.OutakeSubsystem;
 import frc.robot.subsystems.DriveSubsystem.Mode;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,9 +41,19 @@ public class RobotContainer {
 	}
   
 	private void configureDriverBindings(){
-		m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
-		m_driverController.leftTrigger().onTrue(m_driveSubsystem.setMode(Mode.Precision)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
-		m_driverController.rightTrigger().onTrue(m_driveSubsystem.setMode(Mode.Turbo)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
+		m_driverController.x().onTrue(m_driveSubsystem.resetGyro());
+		m_driverController.leftTrigger().or(m_driverController.button(xboxConstants.buttons.upLeft))
+				.onTrue(m_driveSubsystem.setMode(Mode.Precision))
+				.onFalse(m_driveSubsystem.setMode(Mode.Normal));
+		m_driverController.rightTrigger().or(m_driverController.button(xboxConstants.buttons.upRight))
+				.onTrue(m_driveSubsystem.setMode(Mode.Turbo))
+				.onFalse(m_driveSubsystem.setMode(Mode.Normal));
+
+		// new Trigger(() -> {return true;}).whileTrue(new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1)));
+
+		// m_driverController.button(xboxConstants.buttons.r3)
+		// 		.onTrue( new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 1)))
+		// 		.onFalse( new InstantCommand(() -> m_operatorController.setRumble(RumbleType.kBothRumble, 0)));
 	}
   
     private void configureOperatorBindings(){
@@ -52,16 +64,22 @@ public class RobotContainer {
 		m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
 		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(m_elevatorSubsystem.setLevel(0)));
 		m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
+		m_operatorController.y().onTrue(m_outakeSubsystem.emergencyCmd()).onFalse(m_outakeSubsystem.zeroCmd());
+		m_operatorController.x().onTrue(m_outakeSubsystem.reverseCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		// m_operatorController.povUp().onTrue(m_elevatorSubsystem.accelerateCmd());
 		// m_operatorController.povDown().onTrue(m_elevatorSubsystem.decellerateCmd());
-	}
 
+		// m_operatorController.setRumble(RumbleType.kBothRumble, 1);
+	}
 
 	public Command getAutonomousCommand() {
 		return Commands.sequence(
+			// align wheels
+			Commands.run(() -> m_driveSubsystem.drive(0.000001, 0, 0, false), m_driveSubsystem).withDeadline(new WaitCommand(0.2)),
+			Commands.runOnce(() -> m_driveSubsystem.zeroHeading()),
 			Commands.parallel(
 				m_driveSubsystem.goToPose(),
-				new WaitCommand(2).andThen(m_elevatorSubsystem.setLevel(1).withDeadline(new WaitCommand(4)))
+				new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(1).withDeadline(new WaitCommand(2)))
 			),
 			m_outakeSubsystem.outakeCmd(),
 			m_elevatorSubsystem.setLevel(0));

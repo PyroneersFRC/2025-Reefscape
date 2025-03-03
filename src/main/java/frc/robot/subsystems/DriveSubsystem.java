@@ -52,7 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final SwerveDriveKinematics m_driveKinematics = robot.kDriveKinematics;
 
-    private double m_multiplier = 1;
+    private double m_speedMultiplier = 1;
 
     public enum Mode {
         Normal(1),
@@ -149,15 +149,13 @@ public class DriveSubsystem extends SubsystemBase {
         // command, then stop at the end.
         return Commands.sequence(
             new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
-            new InstantCommand(() -> System.out.println("BEFORE TRAJECTORY " + System.currentTimeMillis())),
             swerveControllerCommand,
-            new InstantCommand(() -> System.out.println("AFTER TRAJECTORY " + System.currentTimeMillis())),
             // new InstantCommand(() -> this.drive(0, 0, 0, true))  // wtf, turns backwards, logika de prolavainei na toy dwsei swsth timh to pid
             new InstantCommand(() -> this.zeroVoltage())
             );
     }
     
-    
+    // Χαζο, βρες καλυτερο τροπο
     private void zeroVoltage(){
         m_frontLeft.setVoltage(0);
         m_frontRight.setVoltage(0);
@@ -166,10 +164,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/xspeed", xSpeed);
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/yspeed", ySpeed);
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/rotation", rotation);
-
         xSpeed = xlimiter.calculate(xSpeed);
         ySpeed = ylimiter.calculate(ySpeed);
         rotation = rotationlimiter.calculate(rotation);
@@ -202,7 +196,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_gyro.reset();
         m_odometry.resetPose(getPose2d());
     }
-
 
     public Command resetGyro(){
         return this.runOnce(this::zeroHeading);
@@ -263,7 +256,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, robot.kPhysicalMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, m_speedMultiplier * robot.kPhysicalMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(desiredStates[0]);
         m_frontRight.setDesiredState(desiredStates[1]);
         m_rearLeft.setDesiredState(desiredStates[2]);
@@ -273,18 +266,18 @@ public class DriveSubsystem extends SubsystemBase {
     public Command driveWithJoystickCmd(CommandXboxController xboxController){
         return this.run(() ->
             this.drive(
-                - m_multiplier * robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                - m_speedMultiplier * robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
                     xboxController.getLeftY(), xboxConstants.kDeadband),
-                - m_multiplier * robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
+                - m_speedMultiplier * robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
                     xboxController.getLeftX(), xboxConstants.kDeadband),
-                - m_multiplier * robot.kPhysicalMaxAngularSpeedRadiansPerSecond * MathUtil.applyDeadband(
+                - m_speedMultiplier * robot.kPhysicalMaxAngularSpeedRadiansPerSecond * MathUtil.applyDeadband(
                     xboxController.getRightX(), xboxConstants.kDeadband),
                 true)
         );
     }
 
     public Command setMode(DriveSubsystem.Mode mode){
-        return this.runOnce(() -> this.m_multiplier = mode.multiplier);
+        return this.runOnce(() -> this.m_speedMultiplier = mode.multiplier);
     }
 
 }

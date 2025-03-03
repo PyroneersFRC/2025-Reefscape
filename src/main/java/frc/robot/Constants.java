@@ -45,6 +45,7 @@ public final class Constants {
 	}
 
 	public static class DriveConstants {
+
 		public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
 		public static final double kFrontRightChassisAngularOffset = 0;
 		public static final double kBackLeftChassisAngularOffset = Math.PI;
@@ -64,9 +65,9 @@ public final class Constants {
 		public static final double kITurning = 0;
 		public static final double kDTurning = 0;
 
-		public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7; // previous 5
-		public static final double kTeleDriveAccelerationUnitsPerSecond = 8; // previous 3
-		public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI; // previous 2*2* 
+		public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7;
+		public static final double kTeleDriveAccelerationUnitsPerSecond = 8;
+		public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;
 
 		public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
 		public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
@@ -97,6 +98,14 @@ public final class Constants {
 		public static final int kDriverRotAxis = 4;
 		public static final int kDriverFieldOrientedButtonIdx = 1;
 
+		public static class buttons {
+			public static final int upLeft = 1;
+			public static final int downLeft = 5;
+			public static final int upRight = 2;
+			public static final int downRight = 6;
+			public static final int l3 = 9;
+			public static final int r3 = 10;
+		}
 	}
 
 	public static class visionConstants {
