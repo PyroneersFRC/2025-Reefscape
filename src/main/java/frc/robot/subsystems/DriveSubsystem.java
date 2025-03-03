@@ -138,15 +138,27 @@ public class DriveSubsystem extends SubsystemBase {
         // command, then stop at the end.
         return Commands.sequence(
             new InstantCommand(() -> this.resetOdometry(exampleTrajectory.getInitialPose())),
-            new InstantCommand(() -> System.out.println("BEFORE TRAJECTORY"+System.currentTimeMillis())),
+            new InstantCommand(() -> System.out.println("BEFORE TRAJECTORY " + System.currentTimeMillis())),
             swerveControllerCommand,
-            new InstantCommand(() -> System.out.println("AFTER TRAJECTORY"+System.currentTimeMillis())),
-            new InstantCommand(() -> this.drive(0, 0, 0, true)));
+            new InstantCommand(() -> System.out.println("AFTER TRAJECTORY " + System.currentTimeMillis())),
+            // new InstantCommand(() -> this.drive(0, 0, 0, true))  // wtf, turns backwards, logika de prolavainei na toy dwsei swsth timh to pid
+            new InstantCommand(() -> this.zeroVoltage())
+            );
     }
     
     
+    private void zeroVoltage(){
+        m_frontLeft.setVoltage(0);
+        m_frontRight.setVoltage(0);
+        m_rearLeft.setVoltage(0);
+        m_rearRight.setVoltage(0);
+    }
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/xspeed", xSpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/yspeed", ySpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive/rotation", rotation);
+
         xSpeed = xlimiter.calculate(xSpeed);
         ySpeed = ylimiter.calculate(ySpeed);
         rotation = rotationlimiter.calculate(rotation);

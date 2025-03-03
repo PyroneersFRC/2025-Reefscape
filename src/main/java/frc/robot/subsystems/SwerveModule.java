@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANids;
 
 
@@ -35,9 +36,6 @@ public class SwerveModule {
     //SmartDashboard prefixes
     private final String SWERVE;
     private final String SMART_DASHBOARD_PREFIX;
-
-    public double m_driveVoltage = 0;
-    public double m_turningVoltage = 0;
 
     public SwerveModule(int driveMotorId, int turningMotorId, double chassisAngularOffset) {
         m_chassisAngularOffset = chassisAngularOffset;
@@ -124,8 +122,8 @@ public class SwerveModule {
         m_driveMotor.setVoltage(driveOutput);
         m_turningMotor.set(turningOutput);
 
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
-        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning voltage", turningOutput);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive voltage", driveOutput);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning voltage", turningOutput);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder velocity", m_driveEncoder.getVelocity());
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "drive encoder potition", m_driveEncoder.getPosition());
         
@@ -136,6 +134,12 @@ public class SwerveModule {
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "turning encoder-pi", m_turningEncoder.getPosition() - (Math.PI / 2) % (2*Math.PI));
         
         
+    }
+
+    public void setVoltage(double voltage){
+        m_driveMotor.setVoltage(voltage);
+        m_turningMotor.set(voltage);
+        // System.out.println("Voltage set to " + voltage);
     }
 
 }

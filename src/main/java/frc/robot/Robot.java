@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -17,9 +16,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  */
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
-	private Command m_autoElevator;
-	private Command m_autoOutake;
-	private Command m_autoElevatorDown;
 
 	private final RobotContainer m_robotContainer;
 
@@ -73,15 +69,10 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-		// m_autoElevator = m_robotContainer.getAutoElevator();
-		// m_autoOutake = m_robotContainer.getOutake();
-		// m_autoElevatorDown = m_robotContainer.getAutoElevatorDown();
 
 		// schedule the autonomous command (example)
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.schedule();
-			// m_autoElevator.schedule();
-			// m_autoOutake.schedule();
 		}
 	}
 
