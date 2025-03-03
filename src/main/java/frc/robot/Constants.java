@@ -57,7 +57,8 @@ public final class Constants {
 		// public static final PIDController kPIDTurningController = new PIDController(robot.kPTurning,robot.kITurning,robot.kDTurning);
 		// public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
 		// public static final PIDController kPIDElevator = new PIDController(1,0,0);
-		
+
+		public static final double precisionModeMultiplier = 0.5;
 		
 		public static final double kPTurning = 0.6;
 		public static final double kITurning = 0;

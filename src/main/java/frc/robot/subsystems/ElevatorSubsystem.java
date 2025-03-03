@@ -35,7 +35,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
     
     public boolean outsideLimits(){
         double pos = m_elevator.getPotition();
-        return pos > 6.72 || pos < -0.1;     // 6.6 bro
+        return pos > 6.75 || pos < -0.1;  //6.72   
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
                 setPoint = 4.4;
                 break;
             case 3:
-                setPoint = 6.55;
+                setPoint = 6.65; //6.55
                 break;
             default:
                 throw new RuntimeException("Invalid level (" + level + ")");

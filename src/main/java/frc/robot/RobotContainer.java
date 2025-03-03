@@ -8,6 +8,7 @@ import frc.robot.subsystems.OutakeSubsystem;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -39,7 +40,7 @@ public class RobotContainer {
   
 	private void configureDriverBindings(){
 		m_driverController.b().onTrue(m_driveSubsystem.resetGyro());
-		m_driverController.a().onTrue(m_driveSubsystem.goToPose());
+		m_driverController.leftTrigger().whileTrue(m_driveSubsystem.precisionModeOn()).whileFalse(m_driveSubsystem.precisionModeOff());
 	}
   
     private void configureOperatorBindings(){
@@ -55,7 +56,19 @@ public class RobotContainer {
 	}
 
 	public Command getAutonomousCommand() {
-		return new PathPlannerAuto("auto1").alongWith(m_elevatorSubsystem.setLevel(1)).andThen(m_outakeSubsystem.outakeCmd());
+		return m_driveSubsystem.goToPose();
+	}
+
+	public Command getAutoElevator(){
+		return m_elevatorSubsystem.setLevel(1);
+	}
+
+	public Command getOutake(){
+		return new WaitCommand(4).andThen(m_outakeSubsystem.outakeCmd());
+	}
+
+	public Command getAutoElevatorDown(){
+		return new WaitCommand(7).andThen(m_elevatorSubsystem.setLevel(0));
 	}
 
 }

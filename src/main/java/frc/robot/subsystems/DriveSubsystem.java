@@ -48,6 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
     SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
     SlewRateLimiter rotationlimiter = new SlewRateLimiter(40);
 
+    private boolean precision = false;
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
 
@@ -65,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
     
     public DriveSubsystem() {
         pathplannerConfig();
+        precision = false;
     }
     
     private void pathplannerConfig(){
@@ -97,8 +99,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Create config for trajectory
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    robot.kPhysicalMaxSpeedMetersPerSecond,
-                    robot.kTeleDriveAccelerationUnitsPerSecond)
+                    0.3*robot.kPhysicalMaxSpeedMetersPerSecond,
+                    0.3*robot.kTeleDriveAccelerationUnitsPerSecond)
                 // Add kinematics to ensure max speed is actually obeyed
                 .setKinematics(robot.kDriveKinematics);
     
@@ -111,7 +113,7 @@ public class DriveSubsystem extends SubsystemBase {
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
                 //new Pose2d(getPose2d().getX()+1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI/2))),
-                new Pose2d(1,0,new Rotation2d(0)),
+                new Pose2d(2.5,0,new Rotation2d(0)),
                 config);
     
         var thetaController =
@@ -126,8 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
                 robot.kDriveKinematics,
     
                 // Position controllers
-                new PIDController(3, 0.35, 0),
-                new PIDController(3, 0.35, 0),
+                new PIDController(2, 0.35, 0),
+                new PIDController(2.25, 0.35, 0),
                 thetaController,
                 this::setModuleStates,
                 this);
@@ -170,6 +172,7 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+        SmartDashboard.putBoolean(SMART_DASHBOARD_PREFIX + "precision", precision);
     }
 
 
@@ -245,16 +248,33 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.setDesiredState(desiredStates[3]);
     }
 
+    private void isTrue(){
+        precision = true;
+    }
+    private void isFalse(){
+        precision = false;
+    }
+
+    public Command precisionModeOn(){
+        return this.runOnce(this::isTrue);
+    }
+    public Command precisionModeOff(){
+        return this.runOnce(this::isFalse);
+    }
+
+
+ 
+
     public Command driveWithJoystickCmd(CommandXboxController xboxController){
         return this.run(
                 () ->
                     this.drive(
                         - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
-                            xboxController.getLeftY(), xboxConstants.kDeadband),
+                            precision == false ? xboxController.getLeftY() : xboxController.getLeftY() * robot.precisionModeMultiplier, xboxConstants.kDeadband),
                         - robot.kPhysicalMaxSpeedMetersPerSecond * MathUtil.applyDeadband(
-                            xboxController.getLeftX(), xboxConstants.kDeadband),
+                            precision == false ? xboxController.getLeftX() : xboxController.getLeftX() * robot.precisionModeMultiplier, xboxConstants.kDeadband),
                         - robot.kPhysicalMaxAngularSpeedRadiansPerSecond * MathUtil.applyDeadband(
-                            xboxController.getRightX(), xboxConstants.kDeadband),
+                            precision == false ? xboxController.getRightX() : xboxController.getRightX() * robot.precisionModeMultiplier, xboxConstants.kDeadband),
                         true)
                 );
     }
