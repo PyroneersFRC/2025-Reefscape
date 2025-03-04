@@ -4,10 +4,16 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.OutakeSubsystem;
 import frc.robot.subsystems.DriveSubsystem.Mode;
+import frc.robot.subsystems.ElevatorSubsystem.Level;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
+
+import javax.sound.sampled.SourceDataLine;
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -25,13 +31,19 @@ public class RobotContainer {
 		m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
 
 		new Trigger(m_elevatorSubsystem::outsideLimits).onTrue(umm());
-		new Trigger(m_elevatorSubsystem::enforcedPrecision).onTrue(m_driveSubsystem.setMode(Mode.Precision)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
+		new Trigger(m_elevatorSubsystem::enforcedPrecision).onTrue(	
+			m_driveSubsystem.setMode(Mode.SuperPrecision)
+			.alongWith(Commands.sequence(
+				new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 1)),
+				new WaitCommand(0.5),
+				new InstantCommand(() -> m_driverController.setRumble(RumbleType.kBothRumble, 0)))))
+			.onFalse(m_driveSubsystem.setMode(Mode.Normal));
 		configureButtonBindings();
 	}
 
 	private Command umm(){
 		System.out.println("\n\nWTF Hit Limits\n");
-		return m_elevatorSubsystem.setLevel(0);
+		return m_elevatorSubsystem.setLevel(Level.Level2);
 	}
 
 	private void configureButtonBindings() {
@@ -56,12 +68,12 @@ public class RobotContainer {
 	}
   
     private void configureOperatorBindings(){
-		m_operatorController.leftBumper().onTrue(m_elevatorSubsystem.setLevel(0));
-		m_operatorController.rightBumper().onTrue(m_elevatorSubsystem.setLevel(1));
-		m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
-		m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
+		m_operatorController.leftBumper().onTrue(m_elevatorSubsystem.setLevel(Level.Level0));
+		m_operatorController.rightBumper().onTrue(m_elevatorSubsystem.setLevel(Level.Level1));
+		m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(Level.Level2));
+		m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(Level.Level3));
 		m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
-		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(0.7)).andThen(m_outakeSubsystem.zeroCmd().andThen(m_elevatorSubsystem.setLevel(0))));
+		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(0.7)).andThen(m_outakeSubsystem.zeroCmd().andThen(m_elevatorSubsystem.setLevel(Level.Level0))));
 		m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		m_operatorController.y().onTrue(m_outakeSubsystem.emergencyCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		m_operatorController.x().onTrue(m_outakeSubsystem.reverseCmd()).onFalse(m_outakeSubsystem.zeroCmd());
@@ -78,10 +90,10 @@ public class RobotContainer {
 			Commands.runOnce(() -> m_driveSubsystem.zeroHeading()),
 			Commands.parallel(
 				m_driveSubsystem.goToPose(),
-				new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(1).withDeadline(new WaitCommand(2)))
+				new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(Level.Level1).withDeadline(new WaitCommand(2)))
 			),
 			m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(1)).andThen(m_outakeSubsystem.zeroCmd()),
-			m_elevatorSubsystem.setLevel(0));
+			m_elevatorSubsystem.setLevel(Level.Level0));
 	}
 
 }

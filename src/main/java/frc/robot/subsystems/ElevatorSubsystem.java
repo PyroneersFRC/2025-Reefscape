@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 
-import java.util.Set;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -32,7 +30,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private double m_motorSpeed = 0;
 
-    private enum SetPoints {
+    public enum Level {
         Level0(elevatorConstants.setPoints.level0),
         Level1(elevatorConstants.setPoints.level1),
         Level2(elevatorConstants.setPoints.level2),
@@ -40,7 +38,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
         private double setPoint;
 
-        private SetPoints(double setPoint) {
+        private Level(double setPoint) {
             this.setPoint = setPoint;
         }
     }
@@ -57,9 +55,9 @@ public class ElevatorSubsystem  extends SubsystemBase{
     }
 
     @Override
-    public void periodic(){;
+    public void periodic(){
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/potition", m_elevator.getPotition()); 
-        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/zori", 3.5);
+        // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/zori", 3.5);
         // SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "encoder/velocity", m_elevator.getVelocity()); 
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "motor speed", m_motorSpeed); 
 
@@ -92,30 +90,8 @@ public class ElevatorSubsystem  extends SubsystemBase{
         m_elevator.setMotorSpeed(outputVoltage);
     }
 
-    public Command runElevator(){
-        return this.run(() -> setDesiredState(1.6));    // TODO fix
-    }
-
-    public Command setLevel(int level){
-        double setPoint;
-        switch(level){
-            case 0:
-                setPoint = SetPoints.Level0.setPoint;
-                break;
-            case 1:
-                setPoint = SetPoints.Level1.setPoint;
-                break;
-            case 2:
-                setPoint = SetPoints.Level2.setPoint;
-                break;
-            case 3:
-                setPoint = SetPoints.Level3.setPoint;
-                break;
-            default:
-                throw new RuntimeException("Invalid level (" + level + ")");
-        }
-
-        return this.run(() -> setDesiredState(setPoint));
+    public Command setLevel(Level level){
+        return this.run(() -> setDesiredState(level.setPoint));
     }
 
 
@@ -140,4 +116,5 @@ public class ElevatorSubsystem  extends SubsystemBase{
     public boolean enforcedPrecision(){
         return m_elevator.getPotition() > elevatorConstants.kForcedPrecision;
     }
+
 }

@@ -49,6 +49,7 @@ public final class Constants {
 			public static final double Normal = 1;
 			public static final double Turbo = 1.5;
 			public static final double Precision = 0.5;
+			public static final double SuperPrecision = 0.3;
 		}
 
 		public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;

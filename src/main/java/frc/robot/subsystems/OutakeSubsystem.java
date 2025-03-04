@@ -59,6 +59,8 @@ public class OutakeSubsystem extends SubsystemBase{
             // new RunCommand(() -> {}).until(() -> {System.out.println(m_setPoint+" "+m_encoder.getPosition()); return m_encoder.getPosition() >= m_setPoint;}),
         //     new InstantCommand(() -> m_motor.setVoltage(0))
         // );
+
+        // return this.run(() -> m_motor.setVoltage(2)).until()
         return this.runOnce(() -> m_motor.setVoltage(2));
     }
     

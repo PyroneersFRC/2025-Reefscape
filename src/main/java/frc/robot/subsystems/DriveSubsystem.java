@@ -57,6 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
     public enum Mode {
         Normal(DriveConstants.Mode.Normal),
         Precision(DriveConstants.Mode.Precision),
+        SuperPrecision(DriveConstants.Mode.SuperPrecision),
         Turbo(DriveConstants.Mode.Turbo);
 
         public double multiplier;
