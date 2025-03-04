@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Pound;
-
-import javax.lang.model.util.ElementScanner14;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -15,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.OutakeConstants;
 
 public class OutakeSubsystem extends SubsystemBase{
     private final SparkMax m_motor;
-    private final double m_zero = 0;
     private final RelativeEncoder m_encoder;
     private double m_setPoint = 0;
 
@@ -33,7 +29,7 @@ public class OutakeSubsystem extends SubsystemBase{
     }
 
     public Command zeroCmd(){
-        return this.runOnce(() -> m_motor.setVoltage(m_zero));
+        return this.runOnce(() -> m_motor.setVoltage(0));
     }
 
     // private void outake(){
@@ -45,7 +41,7 @@ public class OutakeSubsystem extends SubsystemBase{
     // }
 
     public Command outakeSlowCmd(){
-        return this.run(() -> m_motor.setVoltage(1));
+        return this.run(() -> m_motor.setVoltage(OutakeConstants.kSlowVoltage));
     }
 
     public Command outakeCmd(){
@@ -61,14 +57,14 @@ public class OutakeSubsystem extends SubsystemBase{
         // );
 
         // return this.run(() -> m_motor.setVoltage(2)).until()
-        return this.runOnce(() -> m_motor.setVoltage(2));
+        return this.runOnce(() -> m_motor.setVoltage(OutakeConstants.kOutakeVoltage));
     }
     
     public Command emergencyCmd(){
-        return this.run(() -> m_motor.setVoltage(3));
+        return this.run(() -> m_motor.setVoltage(OutakeConstants.kEmergencyVoltage));
     }
     public Command reverseCmd(){
-        return this.run(() -> m_motor.setVoltage(-1.3));
+        return this.run(() -> m_motor.setVoltage(OutakeConstants.kReverseVoltage));
     }
     
 }

@@ -135,8 +135,8 @@ public final class Constants {
 			public static final double maxSafety = 6.72;
 		}
 		
-		public static final double kMaxSpeed = 6;
-		public static final double kMaxAcceleration = 3;
+		public static final double kMaxSpeed = 8;
+		public static final double kMaxAcceleration = 5;
 
 		public static class PID {
 			public static final double kP = 1;  	// hran
@@ -157,9 +157,10 @@ public final class Constants {
 	}
 
 	public static class OutakeConstants {
-		public static final double ks = 2;
-		public static final double kv = 0;
-		public static final double kSetpoint = 1;
+		public static final double kOutakeVoltage = 2;
+		public static final double kEmergencyVoltage = 3;
+		public static final double kReverseVoltage = -1.3;
+		public static final double kSlowVoltage = 1;
 	}
 
 }
