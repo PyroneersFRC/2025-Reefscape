@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 
+import java.util.Set;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,12 +16,15 @@ import frc.robot.Constants.elevatorConstants;
 
 public class ElevatorSubsystem  extends SubsystemBase{
     private final ProfiledPIDController m_PIDController = new ProfiledPIDController(
-            elevatorConstants.kP
-        ,elevatorConstants.kI
-        ,elevatorConstants.kD
-        , elevatorConstants.kelevatorConstraints);
+        elevatorConstants.PID.kP,
+        elevatorConstants.PID.kI,
+        elevatorConstants.PID.kD,
+        elevatorConstants.PID.kelevatorConstraints);
 
-    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(elevatorConstants.kS, elevatorConstants.kG, elevatorConstants.kV);   // mikres 0.5, 1.1, 0.3
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
+        elevatorConstants.FeedForward.kS,
+        elevatorConstants.FeedForward.kG,
+        elevatorConstants.FeedForward.kV);
 
     private final ElevatorModule m_elevator;
 
@@ -27,15 +32,28 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private double m_motorSpeed = 0;
 
+    private enum SetPoints {
+        Level0(elevatorConstants.setPoints.level0),
+        Level1(elevatorConstants.setPoints.level1),
+        Level2(elevatorConstants.setPoints.level2),
+        Level3(elevatorConstants.setPoints.level3);
+
+        private double setPoint;
+
+        private SetPoints(double setPoint) {
+            this.setPoint = setPoint;
+        }
+    }
+
     public ElevatorSubsystem(){
         m_elevator = new ElevatorModule(CANids.kLeftElevatorCanId, CANids.kRightElevatorCanId);
-        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/pid values", "P: " + elevatorConstants.kP + " I: " + elevatorConstants.kI + " D: " + elevatorConstants.kD);
-        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/feeddorward values", "Ks: " + elevatorConstants.kS + " kG: " + elevatorConstants.kG + " kV: " + elevatorConstants.kV);
+        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/pid values", "P: " + elevatorConstants.PID.kP + " I: " + elevatorConstants.PID.kI + " D: " + elevatorConstants.PID.kD);
+        SmartDashboard.putString(SMART_DASHBOARD_PREFIX + "tuning/feeddorward values", "Ks: " + elevatorConstants.FeedForward.kS + " kG: " + elevatorConstants.FeedForward.kG + " kV: " + elevatorConstants.FeedForward.kV);
     }
     
     public boolean outsideLimits(){
         double pos = m_elevator.getPotition();
-        return pos > 6.7 || pos < -0.1;  // 6.72   
+        return pos > elevatorConstants.setPoints.maxSafety || pos < -0.1;
     }
 
     @Override
@@ -60,6 +78,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         outputVoltage = MathUtil.clamp(outputVoltage, -8, 8);
         
 
+        // patenta
         if(m_PIDController.getSetpoint().position == 0){
             outputVoltage = 0;
         }
@@ -81,16 +100,16 @@ public class ElevatorSubsystem  extends SubsystemBase{
         double setPoint;
         switch(level){
             case 0:
-                setPoint = 0;
+                setPoint = SetPoints.Level0.setPoint;
                 break;
             case 1:
-                setPoint = 2.6;
+                setPoint = SetPoints.Level1.setPoint;
                 break;
             case 2:
-                setPoint = 4.4;
+                setPoint = SetPoints.Level2.setPoint;
                 break;
             case 3:
-                setPoint = 6.5;
+                setPoint = SetPoints.Level3.setPoint;
                 break;
             default:
                 throw new RuntimeException("Invalid level (" + level + ")");
@@ -108,13 +127,17 @@ public class ElevatorSubsystem  extends SubsystemBase{
         return this.runOnce(this::stop);
     }
 
-    public Command accelerateCmd(){
-        return this.runOnce(() -> { m_motorSpeed += 0.1; 
-                                    m_elevator.setMotorSpeed(m_motorSpeed);});
-    }
+    // public Command accelerateCmd(){
+    //     return this.runOnce(() -> { m_motorSpeed += 0.1; 
+    //                                 m_elevator.setMotorSpeed(m_motorSpeed);});
+    // }
 
-    public Command decellerateCmd(){
-        return this.runOnce(() -> { m_motorSpeed -= 0.1;
-                                    m_elevator.setMotorSpeed(m_motorSpeed);});
-        }
+    // public Command decellerateCmd(){
+    //     return this.runOnce(() -> { m_motorSpeed -= 0.1;
+    //                                 m_elevator.setMotorSpeed(m_motorSpeed);});
+    //     }
+
+    public boolean enforcedPrecision(){
+        return m_elevator.getPotition() > elevatorConstants.kForcedPrecision;
+    }
 }

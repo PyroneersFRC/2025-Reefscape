@@ -69,7 +69,7 @@ public class VisionSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        updateStuff();
+        // updateStuff();
         SmartDashboard.putString("Vision/robotPoseTag", robotPose2d.toString());
         SmartDashboard.putString("Vision/tagPose", tagPose2d.toString());
     }

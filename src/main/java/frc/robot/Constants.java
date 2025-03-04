@@ -45,6 +45,11 @@ public final class Constants {
 	}
 
 	public static class DriveConstants {
+		public static class Mode {
+			public static final double Normal = 1;
+			public static final double Turbo = 1.5;
+			public static final double Precision = 0.5;
+		}
 
 		public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
 		public static final double kFrontRightChassisAngularOffset = 0;
@@ -59,8 +64,6 @@ public final class Constants {
 		// public static final PIDController kPIDDriveController = new PIDController(1, 0, 0);
 		// public static final PIDController kPIDElevator = new PIDController(1,0,0);
 
-		public static final double precisionModeMultiplier = 0.5;
-		
 		public static final double kPTurning = 0.6;
 		public static final double kITurning = 0;
 		public static final double kDTurning = 0;
@@ -118,25 +121,38 @@ public final class Constants {
 		public static final double kTargetPitchRadians = Math.PI / 2;
 		public static final Transform3d cameraToRobot = new Transform3d(0.2, 0.05, 0, new Rotation3d());
 	}
-
+	
 	public static class elevatorConstants {
-		// PID Values
-		public static final double kP = 1;  // hran
-		public static final double kI = 0.2;   // hran 0.4
-		public static final double kD = 0;  // htan 0.2
 
-		// Feedforward Values;
-		public static final double kS = 0.675;
-		public static final double kG = 1.35;
-		public static final double kV = 0.6;
-
+		// precision mode will be enforced on drive if the elevator is beyond this point
+		public static final double kForcedPrecision = 5;
+		public static class setPoints {
+			public static final double level0 = 0;
+			public static final double level1 = 2.6;
+			public static final double level2 = 4.4;
+			public static final double level3 = 6.6;
+			public static final double maxSafety = 6.72;
+		}
+		
 		public static final double kMaxSpeed = 6;
 		public static final double kMaxAcceleration = 3;
 
-		public static final TrapezoidProfile.Constraints kelevatorConstraints = 
-		new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
+		public static class PID {
+			public static final double kP = 1;  	// hran
+			public static final double kI = 0.2;   // hran
+			public static final double kD = 0;    // hran
 
-		public static final double levelValues[] = new double[]{0, 2.6, 4.3, 6.4};
+
+			public static final TrapezoidProfile.Constraints kelevatorConstraints = 
+				new TrapezoidProfile.Constraints(kMaxSpeed, kMaxAcceleration);
+		}
+
+		public static class FeedForward {
+			public static final double kS = 0.675;
+			public static final double kG = 1.35;
+			public static final double kV = 0.6;
+		}
+
 	}
 
 	public static class OutakeConstants {

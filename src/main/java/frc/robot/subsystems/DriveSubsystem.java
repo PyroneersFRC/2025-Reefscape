@@ -55,9 +55,9 @@ public class DriveSubsystem extends SubsystemBase {
     private double m_speedMultiplier = 1;
 
     public enum Mode {
-        Normal(1),
-        Precision(0.5),
-        Turbo(1.5);
+        Normal(DriveConstants.Mode.Normal),
+        Precision(DriveConstants.Mode.Precision),
+        Turbo(DriveConstants.Mode.Turbo);
 
         public double multiplier;
 
@@ -123,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(),
                 // End 3 meters straight ahead of where we started, facing forward
-                //new Pose2d(getPose2d().getX()+1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI/2))),
+                //new Pose2d(getPose2d().getX() + 1, getPose2d().getY(),getRotation2d().plus(new Rotation2d(Math.PI / 2))),
                 new Pose2d(2.5,0,new Rotation2d(0)),
                 config);
     
@@ -155,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
             );
     }
     
-    // Χαζο, βρες καλυτερο τροπο
+    // xazo bres kalitero tropo
     private void zeroVoltage(){
         m_frontLeft.setVoltage(0);
         m_frontRight.setVoltage(0);

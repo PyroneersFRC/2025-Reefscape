@@ -6,10 +6,8 @@ import frc.robot.subsystems.OutakeSubsystem;
 import frc.robot.subsystems.DriveSubsystem.Mode;
 import frc.robot.Constants.CANids;
 import frc.robot.Constants.xboxConstants;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,6 +25,7 @@ public class RobotContainer {
 		m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithJoystickCmd(m_driverController));
 
 		new Trigger(m_elevatorSubsystem::outsideLimits).onTrue(umm());
+		new Trigger(m_elevatorSubsystem::enforcedPrecision).onTrue(m_driveSubsystem.setMode(Mode.Precision)).onFalse(m_driveSubsystem.setMode(Mode.Normal));
 		configureButtonBindings();
 	}
 
@@ -45,7 +44,7 @@ public class RobotContainer {
 		m_driverController.leftTrigger().or(m_driverController.button(xboxConstants.buttons.upLeft))
 				.onTrue(m_driveSubsystem.setMode(Mode.Precision))
 				.onFalse(m_driveSubsystem.setMode(Mode.Normal));
-		m_driverController.rightTrigger().or(m_driverController.button(xboxConstants.buttons.upRight))
+		m_driverController.rightTrigger().or(m_driverController.button(xboxConstants.buttons.upRight)).and(() -> !m_elevatorSubsystem.outsideLimits())
 				.onTrue(m_driveSubsystem.setMode(Mode.Turbo))
 				.onFalse(m_driveSubsystem.setMode(Mode.Normal));
 
@@ -62,7 +61,7 @@ public class RobotContainer {
 		m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(2));
 		m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(3));
 		m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
-		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(m_elevatorSubsystem.setLevel(0)));
+		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(0.7)).andThen(m_outakeSubsystem.zeroCmd().andThen(m_elevatorSubsystem.setLevel(0))));
 		m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		m_operatorController.y().onTrue(m_outakeSubsystem.emergencyCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		m_operatorController.x().onTrue(m_outakeSubsystem.reverseCmd()).onFalse(m_outakeSubsystem.zeroCmd());
@@ -81,7 +80,7 @@ public class RobotContainer {
 				m_driveSubsystem.goToPose(),
 				new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(1).withDeadline(new WaitCommand(2)))
 			),
-			m_outakeSubsystem.outakeCmd(),
+			m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(1)).andThen(m_outakeSubsystem.zeroCmd()),
 			m_elevatorSubsystem.setLevel(0));
 	}
 
