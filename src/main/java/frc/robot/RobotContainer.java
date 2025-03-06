@@ -75,7 +75,7 @@ public class RobotContainer {
 		m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
 		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(0.7)).andThen(m_outakeSubsystem.zeroCmd().andThen(m_elevatorSubsystem.setLevel(Level.Level0))));
 		m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
-		m_operatorController.y().onTrue(Commands.sequence(
+		m_operatorController.y().onTrue(Commands.parallel(
 			m_elevatorSubsystem.setLevel(m_elevatorSubsystem.getLastLevel()),
 			m_outakeSubsystem.emergencyCmd()
 		)).onFalse(m_outakeSubsystem.zeroCmd());
