@@ -26,6 +26,8 @@ public class ElevatorSubsystem  extends SubsystemBase{
 
     private final ElevatorModule m_elevator;
 
+    private Level m_lastLevel = Level.Level0;
+
     private final String SMART_DASHBOARD_PREFIX = "Elevator Subsystem/";
 
     private double m_motorSpeed = 0;
@@ -69,7 +71,7 @@ public class ElevatorSubsystem  extends SubsystemBase{
         SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "profiled pid Setpoint/velocity", setpoint.velocity);
     }
  
-    public void setDesiredState(double desiredState){
+    private void setDesiredState(double desiredState){
         double PIDOutput = m_PIDController.calculate(m_elevator.getPotition(), desiredState);
         double feedforwardOutput = m_feedforward.calculate(m_PIDController.getSetpoint().velocity);
         double outputVoltage = PIDOutput + feedforwardOutput;
@@ -91,9 +93,13 @@ public class ElevatorSubsystem  extends SubsystemBase{
     }
 
     public Command setLevel(Level level){
+        m_lastLevel = level;
         return this.run(() -> setDesiredState(level.setPoint));
     }
-
+    
+    public Level getLastLevel(){
+        return m_lastLevel;
+    }
 
     public void stop(){
         m_elevator.setMotorSpeed(0);
