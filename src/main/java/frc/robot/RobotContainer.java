@@ -73,12 +73,18 @@ public class RobotContainer {
 		m_operatorController.leftTrigger().onTrue(m_elevatorSubsystem.setLevel(Level.Level2));
 		m_operatorController.rightTrigger().onTrue(m_elevatorSubsystem.setLevel(Level.Level3));
 		m_operatorController.x().onTrue(m_elevatorSubsystem.stopCmd());
-		m_operatorController.b().onTrue(m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(0.7)).andThen(m_outakeSubsystem.zeroCmd().andThen(m_elevatorSubsystem.setLevel(Level.Level0))));
+		m_operatorController.b().onTrue(Commands.sequence(
+			m_outakeSubsystem.outakeCmd(),
+			new WaitCommand(0.7),
+			m_outakeSubsystem.zeroCmd(),
+			m_elevatorSubsystem.setLevel(Level.Level0)));
 		m_operatorController.a().onTrue(m_outakeSubsystem.outakeSlowCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		m_operatorController.y().onTrue(Commands.parallel(
 			m_elevatorSubsystem.setLevel(m_elevatorSubsystem.getLastLevel()),
 			m_outakeSubsystem.emergencyCmd()
-		)).onFalse(m_outakeSubsystem.zeroCmd());
+		)).onFalse(Commands.parallel(
+			m_elevatorSubsystem.setLevel(Level.Level0),
+			m_outakeSubsystem.zeroCmd()));
 		m_operatorController.x().onTrue(m_outakeSubsystem.reverseCmd()).onFalse(m_outakeSubsystem.zeroCmd());
 		// m_operatorController.povUp().onTrue(m_elevatorSubsystem.accelerateCmd());
 		// m_operatorController.povDown().onTrue(m_elevatorSubsystem.decellerateCmd());
