@@ -70,7 +70,7 @@ public final class Constants {
 		public static final double kDTurning = 0;
 
 		public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7;
-		public static final double kTeleDriveAccelerationUnitsPerSecond = 8;
+		public static final double kTeleDriveAccelerationUnitsPerSecond = 16;
 		public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;
 
 		public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;

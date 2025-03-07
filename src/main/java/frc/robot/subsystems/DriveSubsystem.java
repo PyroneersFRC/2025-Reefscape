@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
     SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    SlewRateLimiter rotationlimiter = new SlewRateLimiter(40);
+    SlewRateLimiter rotationlimiter = new SlewRateLimiter(80);
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
 
@@ -165,9 +165,15 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double xSpeed, double ySpeed, double rotation, boolean fieldRelative){
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "x before limit", xSpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "y before limit", ySpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "rotation before limit", rotation);
         xSpeed = xlimiter.calculate(xSpeed);
         ySpeed = ylimiter.calculate(ySpeed);
         rotation = rotationlimiter.calculate(rotation);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "x after limit", xSpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "y after limit", ySpeed);
+        SmartDashboard.putNumber(SMART_DASHBOARD_PREFIX + "rotation after limit", rotation);
        
         var swerveModuleStates = robot.kDriveKinematics.toSwerveModuleStates(
             fieldRelative 
