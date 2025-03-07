@@ -69,8 +69,14 @@ public final class Constants {
 		public static final double kITurning = 0;
 		public static final double kDTurning = 0;
 
+		public static class slewRateLimiters {
+			public static final double xy = kTeleDriveAccelerationUnitsPerSecond;
+			public static final double rotation = 80;
+		}
+
 		public static final double kPhysicalMaxSpeedMetersPerSecond = 4.7;
 		public static final double kTeleDriveAccelerationUnitsPerSecond = 16;
+
 		public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2*2*Math.PI;
 
 		public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;

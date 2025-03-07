@@ -44,9 +44,9 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveModule m_rearLeft = new SwerveModule(CANids.kRearLeftDrivingCanId,CANids.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset);
     private final SwerveModule m_rearRight = new SwerveModule(CANids.kRearRightDrivingCanId,CANids.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset);
 
-    SlewRateLimiter xlimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    SlewRateLimiter ylimiter = new SlewRateLimiter(robot.kTeleDriveAccelerationUnitsPerSecond);
-    SlewRateLimiter rotationlimiter = new SlewRateLimiter(80);
+    SlewRateLimiter xlimiter = new SlewRateLimiter(robot.slewRateLimiters.xy);
+    SlewRateLimiter ylimiter = new SlewRateLimiter(robot.slewRateLimiters.xy);
+    SlewRateLimiter rotationlimiter = new SlewRateLimiter(robot.slewRateLimiters.rotation);
 
     private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);   // TODO we put random value
 
