@@ -88,12 +88,15 @@ public class RobotContainer {
 			// align wheels
 			Commands.run(() -> m_driveSubsystem.drive(0.000001, 0, 0, false), m_driveSubsystem).withDeadline(new WaitCommand(0.2)),
 			Commands.runOnce(() -> m_driveSubsystem.zeroHeading()),
-			Commands.parallel(
-				m_driveSubsystem.goToPose(),
-				new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(Level.Level1).withDeadline(new WaitCommand(2)))
-			),
-			m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(1)).andThen(m_outakeSubsystem.zeroCmd()),
-			m_elevatorSubsystem.setLevel(Level.Level0));
+			// Commands.parallel(
+				m_driveSubsystem.goToPose()
+				// new WaitCommand(1.3).andThen(m_elevatorSubsystem.setLevel(Level.Level1).withDeadline(new WaitCommand(2)))
+			);
+			// m_outakeSubsystem.outakeCmd().andThen(new WaitCommand(1)).andThen(m_outakeSubsystem.zeroCmd()),
+			// m_elevatorSubsystem.setLevel(Level.Level0));
 	}
 
+	public void teleopInit(){
+		m_driveSubsystem.teleopInitGyro();
+	}
 }

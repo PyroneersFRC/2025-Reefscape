@@ -198,9 +198,15 @@ public class DriveSubsystem extends SubsystemBase {
         });
     }
 
+    public void teleopInitGyro(){
+        m_gyro.reset();
+        m_gyro.setAngleAdjustment(Math.PI);
+        m_odometry.resetPose(getPose2d());  // ! wrong, change to apply a rotation by pi
+    }
 
     public void zeroHeading(){
         m_gyro.reset();
+        m_gyro.setAngleAdjustment(0);
         m_odometry.resetPose(getPose2d());
     }
 
